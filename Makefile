@@ -1,22 +1,22 @@
 CC=gcc
 DBG=gdb
-BIN=main
-SRC=main.c
-OBJS=main.o
+BIN=src/main.exe
+SRC=src/main.c
+OBJS=src/main.o
 IFLAGS=-Isrc/include
-LFLAGS=-Lsrc/lib
+LFLAGS=-Lsrc/lib -lmingw32 -lSDL2main -lSDL2
 CFLAGS=-g -Wall -Wextra -pedantic -std=c11
 
 all: compile link
 
-compile: $(OBJS)
-	@echo Compiling source files...
-	$(CC) -o $(BIN) $(OBJS) $(IFLAGS) $(LFLAGS)
-	@echo Done compiling...
+compile: #Compiling .c files into .o object files
+	@echo Compiling and Assembling source files...
+	$(CC) $(SRC) $(CFLAGS) -c -o $(OBJS) $(IFLAGS)
+	@echo Done compiling and assembling...
 
-link:
+link: #Linking .o objects into .exe file
 	@echo Linking object files...
-	$(CC) -c $(SRC)
+	$(CC) $(OBJS) -o $(BIN) $(LFLAGS)
 	@echo Done linking...
 
 run: all
@@ -31,5 +31,5 @@ debug: $(BIN)
 
 clean:
 	@echo Cleaning garbage files...
-	del *.o *.exe
+	del src\*.o src\*.exe
 	@echo Done cleaning...
