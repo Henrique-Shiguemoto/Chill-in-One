@@ -1,0 +1,3 @@
+[submodule "cGame/src/vendor/mthlibc"]
+	path = cGame/src/vendor/mthlibc
+	url = https://github.com/Henrique-Shiguemoto/mthlibc.git
