@@ -1,95 +1,29 @@
-#include <stdio.h>
-#include <stdbool.h>
+#include "main.h"
+#include "input.h"
+#include "render.h"
+#include "sim.h"
 
-#define SDL_MAIN_HANDLED
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_ttf.h"
-#include "mthlib.h"
-
-#define WINDOW_WIDTH	640
-#define WINDOW_HEIGHT	640
-
-SDL_Window* g_Window = {0};
-SDL_Renderer* g_Renderer = {0};
-SDL_Surface* g_BackgroundTileSurface = {0};
-SDL_Texture* g_BackgroundTileTexture = {0};
+Window g_Window = {0};
+SDL_Texture* g_BackgroundTile = {0};
+SDL_Texture* g_BrickTile = {0};
+Hole g_Hole = {.pos = {1, 1}};
+Ball g_Ball = {.pos = {10, 8}};
 b8 g_GameIsRunning = MTHLIB_FALSE;
-
-void ProcessInput(){
-	SDL_Event event;
-	while(SDL_PollEvent(&event)){
-		switch(event.type){
-			case SDL_QUIT: {
-				g_GameIsRunning = MTHLIB_FALSE;
-				break;
-			}
-		}
-	}
-}
-
-void SimulateWorld(){
-
-}
-
-void RenderGraphics(){
-	SDL_RenderClear(g_Renderer);
-	//Render background tiles
-	int width = g_BackgroundTileSurface->w;
-	int height = g_BackgroundTileSurface->h;
-	for(int y = 0; y < WINDOW_HEIGHT / height; y++){
-		for(int x = 0; x < WINDOW_WIDTH / width; x++){
-			SDL_Rect destRect = {x * width, y * height, width, height};
-			SDL_RenderCopy(g_Renderer, g_BackgroundTileTexture, NULL, &destRect);
-		}
-	}
-	SDL_RenderPresent(g_Renderer);
-}
+b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+												   {1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
+												   {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+												   {1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+												   {1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+												   {1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1},
+												   {1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1},
+												   {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+												   {1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1},
+												   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 int main(void){
-	//SDL Initialization
-	if(SDL_Init(SDL_INIT_VIDEO) < 0){
-		//Error initializing SDL
-		fprintf(stderr, SDL_GetError());
-		return EXIT_FAILURE;
-	}
-
-	//SDL_image Initialization
-	if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG ){
-		//Error initializing SDL_image
-		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
-		return EXIT_FAILURE;
-	}
-
-	//SDL_ttf Initialization
-	if(TTF_Init() < 0){
-		//Error initializing SDL_ttf
-		fprintf(stderr, TTF_GetError());
-		SDL_Quit();
-		IMG_Quit();
-		return EXIT_FAILURE;	
-	}
-
-	//Creating a window
-	g_Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
-	if(g_Window == NULL){
-		//Error creating window
-		fprintf(stderr, SDL_GetError());
-		return EXIT_FAILURE;
-	}
-
-	//Creating a renderer (with GPU acceleration, we're only using VRAM pixel data, i.e. textures)
-	g_Renderer = SDL_CreateRenderer(g_Window, -1, SDL_RENDERER_ACCELERATED);
-	if(g_Renderer == NULL){
-		//Error creating renderer
-		fprintf(stderr, SDL_GetError());
-		return EXIT_FAILURE;	
-	}
-
-	//Loading images
-	g_BackgroundTileSurface = IMG_Load("assets/images/backgroundTile.png");
-	g_BackgroundTileTexture = SDL_CreateTextureFromSurface(g_Renderer, g_BackgroundTileSurface);
+	if(!InitializeSystems()) return EXIT_FAILURE;
+	if(!CreateWindow()) return EXIT_FAILURE;
+	if(!LoadAssets()) return EXIT_FAILURE;
 
 	//Now that we had no problems initializing SDL and
 	//		creating a window, we can run the game
@@ -101,16 +35,102 @@ int main(void){
 		SimulateWorld();
 		RenderGraphics();
 	}
+	
+	//Freeing memory and quitting subsystems
+	QuitGame();
+	return EXIT_SUCCESS;
+}
 
+b8 CreateWindow(void){
+	//Creating a window
+	g_Window.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+	if(g_Window.window == NULL){
+		//Error creating window
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+
+	//Creating a renderer (with GPU acceleration, we're only using VRAM pixel data, i.e. textures)
+	g_Window.renderer = SDL_CreateRenderer(g_Window.window, -1, SDL_RENDERER_ACCELERATED);
+	if(g_Window.renderer == NULL){
+		//Error creating renderer
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	return MTHLIB_TRUE;
+}
+
+b8 InitializeSystems(void){
+	//SDL Initialization
+	if(SDL_Init(SDL_INIT_VIDEO) < 0){
+		//Error initializing SDL
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+
+	//SDL_image Initialization
+	if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG ){
+		//Error initializing SDL_image
+		fprintf(stderr, IMG_GetError());
+		SDL_Quit();
+		return MTHLIB_FALSE;
+	}
+
+	//SDL_ttf Initialization
+	if(TTF_Init() < 0){
+		//Error initializing SDL_ttf
+		fprintf(stderr, TTF_GetError());
+		SDL_Quit();
+		IMG_Quit();
+		return MTHLIB_FALSE;
+	}
+	return MTHLIB_TRUE;
+}
+
+b8 LoadAssets(void){
+	//Loading images
+	g_BackgroundTile = IMG_LoadTexture(g_Window.renderer, "assets/images/backgroundTile.png");	
+	if(g_BackgroundTile == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		SDL_Quit();
+		return MTHLIB_FALSE;
+	}
+	g_BrickTile = IMG_LoadTexture(g_Window.renderer, "assets/images/brick.png");
+	if(g_BrickTile == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		SDL_Quit();
+		return MTHLIB_FALSE;
+	}
+	g_Hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
+	if(g_Hole.texture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		SDL_Quit();
+		return MTHLIB_FALSE;
+	}	
+	g_Ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
+	if(g_Ball.texture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		SDL_Quit();
+		return MTHLIB_FALSE;
+	}
+	return MTHLIB_TRUE;
+}
+
+void QuitGame(void){
 	//Freeing memory
-	SDL_FreeSurface(g_BackgroundTileSurface);
-	SDL_DestroyTexture(g_BackgroundTileTexture);
-	SDL_DestroyRenderer(g_Renderer);
-	SDL_DestroyWindow(g_Window);
+	SDL_DestroyTexture(g_Hole.texture);
+	SDL_DestroyTexture(g_Ball.texture);
+	SDL_DestroyTexture(g_BrickTile);
+	SDL_DestroyTexture(g_BackgroundTile);
+	SDL_DestroyRenderer(g_Window.renderer);
+	SDL_DestroyWindow(g_Window.window);
 
 	//Quiting subsystems
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
-	return EXIT_SUCCESS;
 }
