@@ -4,7 +4,7 @@ BIN=src/main.exe
 SRC=src/main.c
 OBJS=src/main.o
 IFLAGS=-Isrc/include -Isrc/vendor/mthlibc
-LFLAGS=-Lsrc/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
+LFLAGS=-Lsrc/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 CFLAGS=-g -Wall -Wextra -pedantic -std=c11
 
 all: compile link

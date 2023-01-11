@@ -4,6 +4,7 @@
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_ttf.h"
 #include "mthlib.h"
 
 #define WINDOW_WIDTH	640
@@ -61,6 +62,15 @@ int main(void){
 		return EXIT_FAILURE;
 	}
 
+	//SDL_ttf Initialization
+	if(TTF_Init() < 0){
+		//Error initializing SDL_ttf
+		fprintf(stderr, TTF_GetError());
+		SDL_Quit();
+		IMG_Quit();
+		return EXIT_FAILURE;	
+	}
+
 	//Creating a window
 	g_Window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 	if(g_Window == NULL){
@@ -99,6 +109,7 @@ int main(void){
 	SDL_DestroyWindow(g_Window);
 
 	//Quiting subsystems
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 	return EXIT_SUCCESS;
