@@ -1,6 +1,5 @@
 #include "input.h"
-#include "mthlib.h"
-#include "SDL.h"
+#include "main.h"
 
 extern b8 g_GameIsRunning;
 
@@ -17,6 +16,14 @@ void ProcessInput(void){
 				if(event.key.keysym.sym == SDLK_ESCAPE){
 					g_GameIsRunning = MTHLIB_FALSE;
 				}
+				break;
+			}
+			case SDL_MOUSEMOTION: {
+				int x, y;
+				SDL_GetMouseState(&x, &y);
+				x /= 64;
+				y /= 64;
+				printf("Tile Map Coordinates = ( %i, %i )\n", x, y);
 				break;
 			}
 		}

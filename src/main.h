@@ -11,6 +11,8 @@
 #define WINDOW_WIDTH	768
 #define WINDOW_HEIGHT	640
 
+#define DESIRED_FPS 	60
+
 typedef struct Window{
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -18,10 +20,14 @@ typedef struct Window{
 
 typedef struct Ball{
 	v2 pos;
+	v2 vel;
 	SDL_Texture* texture;
 } Ball;
 
-typedef Ball Hole;
+typedef struct Hole{
+	v2 pos;
+	SDL_Texture* texture;
+} Hole;
 
 b8 InitializeSystems(void);
 b8 CreateWindow(void);

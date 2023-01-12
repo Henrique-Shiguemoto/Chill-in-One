@@ -4,20 +4,16 @@
 extern Window g_Window;
 extern SDL_Texture* g_BackgroundTile;
 extern SDL_Texture* g_BrickTile;
+extern TTF_Font* g_Font;
 extern Hole g_Hole;
 extern Ball g_Ball;
 extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
 
 void RenderBackgroundAndWalls(void){
-	//Background and brick tiles have the same width and height, 
-	//		so we only need two attributes instead of four
-	int width = 0;
-	int height = 0;
-	SDL_QueryTexture(g_BackgroundTile, NULL, NULL, &width, &height);
-	for(int y = 0; y < WINDOW_HEIGHT / height; y++){
-		for(int x = 0; x < WINDOW_WIDTH / width; x++){
+	for(int y = 0; y < WINDOW_HEIGHT / 64; y++){
+		for(int x = 0; x < WINDOW_WIDTH / 64; x++){
 			//Drawing corresponding tile (either background tile or brick tile)
-			SDL_Rect destRect = {x * width, y * height, width, height};
+			SDL_Rect destRect = {x * 64, y * 64, 64, 64};
 			SDL_Texture* texture = NULL;
 			if(g_TileMap[y][x] == 0){
 				texture = g_BackgroundTile;
@@ -45,10 +41,20 @@ void RenderBall(void){
 	SDL_RenderCopy(g_Window.renderer, g_Ball.texture, NULL, &destRect);
 }
 
+void RenderUI(void){
+	SDL_Surface* fontSurface = TTF_RenderText_Solid(g_Font, "Test Text", (SDL_Color){0, 0, 0, 0});
+	SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(g_Window.renderer, fontSurface);
+	SDL_FreeSurface(fontSurface);
+	SDL_Rect destRect = {10, 10, 300, 50};
+	SDL_RenderCopy(g_Window.renderer, fontTexture, NULL, &destRect);
+	SDL_DestroyTexture(fontTexture);
+}
+
 void RenderGraphics(void){
 	SDL_RenderClear(g_Window.renderer);
 	RenderBackgroundAndWalls();
 	RenderHole();
 	RenderBall();
+	//RenderUI();
 	SDL_RenderPresent(g_Window.renderer);
 }

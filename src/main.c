@@ -4,10 +4,11 @@
 #include "sim.h"
 
 Window g_Window = {0};
-SDL_Texture* g_BackgroundTile = {0};
-SDL_Texture* g_BrickTile = {0};
+SDL_Texture* g_BackgroundTile = NULL;
+SDL_Texture* g_BrickTile = NULL;
+TTF_Font* g_Font = NULL;
 Hole g_Hole = {.pos = {1, 1}};
-Ball g_Ball = {.pos = {10, 8}};
+Ball g_Ball = {.pos = {10, 8}, .vel = {1, 1}};
 b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   {1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
@@ -21,9 +22,9 @@ b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 												   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 int main(void){
-	if(!InitializeSystems()) return EXIT_FAILURE;
-	if(!CreateWindow()) return EXIT_FAILURE;
-	if(!LoadAssets()) return EXIT_FAILURE;
+	if(!InitializeSystems()) goto quit;
+	if(!CreateWindow()) goto quit;
+	if(!LoadAssets()) goto quit;
 
 	//Now that we had no problems initializing SDL and
 	//		creating a window, we can run the game
@@ -31,11 +32,17 @@ int main(void){
 
 	//Game Loop
 	while(g_GameIsRunning){
+		u32 frameStart = SDL_GetTicks();
 		ProcessInput();
 		SimulateWorld();
 		RenderGraphics();
+		u32 frameEnd = SDL_GetTicks();
+		if((frameEnd - frameStart) < (1000 / DESIRED_FPS)){
+			SDL_Delay(frameEnd - frameStart);
+		}
 	}
 	
+quit:
 	//Freeing memory and quitting subsystems
 	QuitGame();
 	return EXIT_SUCCESS;
@@ -72,7 +79,6 @@ b8 InitializeSystems(void){
 	if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG ){
 		//Error initializing SDL_image
 		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
 		return MTHLIB_FALSE;
 	}
 
@@ -80,8 +86,6 @@ b8 InitializeSystems(void){
 	if(TTF_Init() < 0){
 		//Error initializing SDL_ttf
 		fprintf(stderr, TTF_GetError());
-		SDL_Quit();
-		IMG_Quit();
 		return MTHLIB_FALSE;
 	}
 	return MTHLIB_TRUE;
@@ -93,28 +97,30 @@ b8 LoadAssets(void){
 	if(g_BackgroundTile == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
 		return MTHLIB_FALSE;
 	}
 	g_BrickTile = IMG_LoadTexture(g_Window.renderer, "assets/images/brick.png");
 	if(g_BrickTile == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
 		return MTHLIB_FALSE;
 	}
 	g_Hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
 	if(g_Hole.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
 		return MTHLIB_FALSE;
 	}	
 	g_Ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
 	if(g_Ball.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		SDL_Quit();
+		return MTHLIB_FALSE;
+	}
+	g_Font = TTF_OpenFont("assets/fonts/8bitOperatorPlus8-Regular.ttf", 32);
+	if(g_Font == NULL){
+		//Error loading font
+		fprintf(stderr, TTF_GetError());
 		return MTHLIB_FALSE;
 	}
 	return MTHLIB_TRUE;
