@@ -5,6 +5,7 @@ extern Window g_Window;
 extern SDL_Texture* g_BackgroundTile;
 extern SDL_Texture* g_BrickTile;
 extern TTF_Font* g_Font;
+extern b8 g_ShowDebugInfo;
 extern Hole g_Hole;
 extern Ball g_Ball;
 extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
@@ -41,15 +42,15 @@ void RenderBall(void){
 	SDL_RenderCopy(g_Window.renderer, g_Ball.texture, NULL, &destRect);
 }
 
-void RenderUI(void){
-	
-}
+void RenderUI(void){ }
 
 #ifdef DEBUG
 void RenderDebugInfo(void){
-	char debugString[200] = "Hello";
-	snprintf(debugString, array_count(debugString), "Ball's Velocity = (%f, %f)", g_Ball.vel.x, g_Ball.vel.y);
-	RenderString(debugString, (v2){25, 25}, (v2){700, 40});
+	if(g_ShowDebugInfo == MTHLIB_TRUE){
+		char debugString[200];
+		snprintf(debugString, array_count(debugString), "Ball's Velocity = (%f, %f)", g_Ball.vel.x, g_Ball.vel.y);
+		RenderString(debugString, (v2){25, 25}, (v2){700, 40});
+	}
 }
 #else
 void RenderDebugInfo(void){}
@@ -70,6 +71,6 @@ void RenderGraphics(void){
 	RenderHole();
 	RenderBall();
 	// RenderUI();
-	// RenderDebugInfo();
+	RenderDebugInfo();
 	SDL_RenderPresent(g_Window.renderer);
 }

@@ -9,7 +9,9 @@ SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
 Hole g_Hole = {.pos = {1 * 64 + 32 - 24, 1 * 64 + 32 - 24}};
 Ball g_Ball = {.pos = {4 * 64 + 32 - 8 + 20, 6 * 64 + 32 - 8 - 20}, .vel = {0, 0}};
+Input g_Input = {0};
 b8 g_GameIsRunning = MTHLIB_FALSE;
+b8 g_ShowDebugInfo = MTHLIB_FALSE;
 b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   {1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
 												   {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
