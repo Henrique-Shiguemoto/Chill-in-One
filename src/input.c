@@ -19,11 +19,6 @@ void ProcessInput(void){
 				break;
 			}
 			case SDL_MOUSEMOTION: {
-				int x, y;
-				SDL_GetMouseState(&x, &y);
-				x /= 64;
-				y /= 64;
-				printf("Tile Map Coordinates = ( %i, %i )\n", x, y);
 				break;
 			}
 		}

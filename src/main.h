@@ -13,6 +13,13 @@
 
 #define DESIRED_FPS 	60
 
+#define BRICK_TILE		 		1
+#define BACKGROUND_TILE 		0
+
+#define array_count(array) (sizeof(array) / sizeof(array[0]))
+
+#define DEBUG
+
 typedef struct Window{
 	SDL_Window* window;
 	SDL_Renderer* renderer;

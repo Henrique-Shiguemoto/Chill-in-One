@@ -7,8 +7,8 @@ Window g_Window = {0};
 SDL_Texture* g_BackgroundTile = NULL;
 SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
-Hole g_Hole = {.pos = {1, 1}};
-Ball g_Ball = {.pos = {10, 8}, .vel = {1, 1}};
+Hole g_Hole = {.pos = {1 * 64 + 32 - 24, 1 * 64 + 32 - 24}};
+Ball g_Ball = {.pos = {4 * 64 + 32 - 8 + 20, 6 * 64 + 32 - 8 - 20}, .vel = {0, 0}};
 b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   {1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
@@ -18,7 +18,7 @@ b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64] = {{1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 												   {1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1},
 												   {1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1},
 												   {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-												   {1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1},
+												   {1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1},
 												   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 int main(void){
@@ -38,7 +38,7 @@ int main(void){
 		RenderGraphics();
 		u32 frameEnd = SDL_GetTicks();
 		if((frameEnd - frameStart) < (1000 / DESIRED_FPS)){
-			SDL_Delay(frameEnd - frameStart);
+			SDL_Delay((1000 / DESIRED_FPS) - (frameEnd - frameStart));
 		}
 	}
 	
