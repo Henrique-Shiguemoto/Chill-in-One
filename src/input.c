@@ -4,6 +4,7 @@
 extern b8 g_GameIsRunning;
 extern b8 g_ShowDebugInfo;
 extern Input g_Input;
+extern Ball g_Ball;
 
 void ProcessInput(void){
 	SDL_Event event;
@@ -11,7 +12,9 @@ void ProcessInput(void){
 		const u8* keyStates = SDL_GetKeyboardState(NULL);
 		g_Input.debugKeyIsDown = keyStates[SDL_SCANCODE_TAB];
 		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
-		
+
+		static v2 mousePosWhenMousePressed = {0};
+
 		if(event.type == SDL_QUIT){
 			g_GameIsRunning = MTHLIB_FALSE;
 		}
@@ -23,13 +26,22 @@ void ProcessInput(void){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
 			}
 		}
-		
-		UpdateWasKeys();
+		if(event.button.button == SDL_BUTTON_LEFT){
+			if(event.type == SDL_MOUSEBUTTONDOWN){
+				int mouseX = 0;
+				int mouseY = 0;
+				SDL_GetMouseState(&mouseX, &mouseY);
+				mousePosWhenMousePressed = (v2){mouseX, mouseY};
+			}
+			if(event.type == SDL_MOUSEBUTTONUP){
+				int mouseX = 0;
+				int mouseY = 0;
+				SDL_GetMouseState(&mouseX, &mouseY);
+				v2 mousePosWhenMouseReleased = (v2){(float)mouseX, (float)mouseY};
+				g_Ball.vel = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
+			}
+		}
+		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
+		g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
 	}
-	
-}
-
-void UpdateWasKeys(void){
-	g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
-	g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
 }

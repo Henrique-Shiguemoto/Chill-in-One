@@ -11,4 +11,3 @@ typedef struct Input{
 } Input;
 
 void ProcessInput(void);
-void UpdateWasKeys(void);

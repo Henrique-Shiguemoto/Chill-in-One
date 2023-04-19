@@ -1004,7 +1004,7 @@ b8 SkewLines(line3D l1, line3D l2){
 b8 CollisionAABB2D(AABB2D r1, AABB2D r2){
 	return((r1.min.x < r2.max.x) &&
     	   (r1.max.x > r2.min.x) &&
-   	   	   (r1.min.y < r2.min.y) &&
+   	   	   (r1.min.y < r2.max.y) &&
     	   (r1.max.y > r2.min.y));
 }
 

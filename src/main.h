@@ -12,9 +12,14 @@
 #define WINDOW_HEIGHT	640
 
 #define DESIRED_FPS 	60
+#define DESIRED_DELTA	(DESIRED_FPS / 1000.0f)
 
 #define BRICK_TILE		 		1
 #define BACKGROUND_TILE 		0
+
+#define BALL_SIZE 		16
+#define HOLE_SIZE 		48
+#define BRICK_SIZE 		64
 
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 

@@ -29,16 +29,16 @@ void RenderBackgroundAndWalls(void){
 void RenderHole(void){
 	SDL_Rect destRect = {.x = g_Hole.pos.x,
 						 .y = g_Hole.pos.y,
-						 .w = 48,
-						 .h = 48};
+						 .w = HOLE_SIZE,
+						 .h = HOLE_SIZE};
 	SDL_RenderCopy(g_Window.renderer, g_Hole.texture, NULL, &destRect);
 }
 
 void RenderBall(void){
 	SDL_Rect destRect = {.x = g_Ball.pos.x,
 						 .y = g_Ball.pos.y,
-						 .w = 16,
-						 .h = 16};
+						 .w = BALL_SIZE,
+						 .h = BALL_SIZE};
 	SDL_RenderCopy(g_Window.renderer, g_Ball.texture, NULL, &destRect);
 }
 
