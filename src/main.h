@@ -18,7 +18,7 @@
 #define BACKGROUND_TILE 		0
 
 #define BALL_SIZE 		16
-#define HOLE_SIZE 		48
+#define HOLE_SIZE 		32
 #define BRICK_SIZE 		64
 
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
