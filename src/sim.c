@@ -48,7 +48,7 @@ OutOfBrickCollisionDetection:
 	g_Ball.pos = (v2){g_Ball.pos.x + g_Ball.vel.x * DESIRED_DELTA, g_Ball.pos.y + g_Ball.vel.y * DESIRED_DELTA};
 
 	//Update ball's velocity
-	g_Ball.vel = ScaleV2(g_Ball.vel, 0.92f);
+	g_Ball.vel = ScaleV2(g_Ball.vel, 0.97f);
 
 	//Check collision with hole
 	v2 ballAABBOffset = (v2){BALL_SIZE, BALL_SIZE};
@@ -59,6 +59,12 @@ OutOfBrickCollisionDetection:
 		//Ball and hole collided
 		printf("You Won!\n");
 		g_GameIsRunning = MTHLIB_FALSE;
+	}
+
+	// Checking to see if the ball is currently moving or not
+	if(NormV2(g_Ball.vel) <= 0.01f){
+		g_Ball.isMoving = MTHLIB_FALSE;
+		g_Ball.vel = (v2){0};
 	}
 }
 

@@ -8,6 +8,7 @@ extern TTF_Font* g_Font;
 extern b8 g_ShowDebugInfo;
 extern Hole g_Hole;
 extern Ball g_Ball;
+extern Arrow g_Arrow;
 extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
 
 void RenderBackgroundAndWalls(void){
@@ -42,19 +43,27 @@ void RenderBall(void){
 	SDL_RenderCopy(g_Window.renderer, g_Ball.texture, NULL, &destRect);
 }
 
+void RenderArrow(void){
+	// ***Magic numbers***
+	SDL_Point pt = {32, 64 + 0.5*BALL_SIZE};
+	SDL_Rect destRect = {.x = g_Ball.pos.x - 32 + 0.5*BALL_SIZE,
+						 .y = g_Ball.pos.y - 64,
+						 .w = 64,
+						 .h = 64};
+	SDL_RenderCopyEx(g_Window.renderer, g_Arrow.texture, NULL, &destRect, (f64)g_Arrow.angle, &pt, SDL_FLIP_NONE);
+}
+
 void RenderUI(void){ }
 
-#ifdef DEBUG
 void RenderDebugInfo(void){
 	if(g_ShowDebugInfo == MTHLIB_TRUE){
 		char debugString[200];
-		snprintf(debugString, array_count(debugString), "Ball's Velocity = (%f, %f)", g_Ball.vel.x, g_Ball.vel.y);
-		RenderString(debugString, (v2){25, 25}, (v2){700, 40});
+		snprintf(debugString, array_count(debugString), "Ball's Velocity = (%.4f, %.4f)", g_Ball.vel.x, g_Ball.vel.y);
+		RenderString(debugString, (v2){25, 25}, (v2){400, 20});
+		snprintf(debugString, array_count(debugString), "Ball is Moving = %s", g_Ball.isMoving ? "TRUE" : "FALSE");
+		RenderString(debugString, (v2){25, 55}, (v2){300, 20});
 	}
 }
-#else
-void RenderDebugInfo(void){}
-#endif
 
 void RenderString(const char* text, v2 pos, v2 size){
 	SDL_Surface* fontSurface = TTF_RenderText_Solid(g_Font, text, (SDL_Color){0, 0, 0, 0});
@@ -70,7 +79,7 @@ void RenderGraphics(void){
 	RenderBackgroundAndWalls();
 	RenderHole();
 	RenderBall();
-	// RenderUI();
+	RenderArrow();
 	RenderDebugInfo();
 	SDL_RenderPresent(g_Window.renderer);
 }

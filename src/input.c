@@ -26,19 +26,27 @@ void ProcessInput(void){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
 			}
 		}
-		if(event.button.button == SDL_BUTTON_LEFT){
+		if(event.button.button == SDL_BUTTON_LEFT && !g_Ball.isMoving){
 			if(event.type == SDL_MOUSEBUTTONDOWN){
+				mouseIsCurrentlyPressed = MTHLIB_TRUE;
 				int mouseX = 0;
 				int mouseY = 0;
 				SDL_GetMouseState(&mouseX, &mouseY);
 				mousePosWhenMousePressed = (v2){mouseX, mouseY};
 			}
 			if(event.type == SDL_MOUSEBUTTONUP){
+				mouseIsCurrentlyPressed = MTHLIB_FALSE;
 				int mouseX = 0;
 				int mouseY = 0;
 				SDL_GetMouseState(&mouseX, &mouseY);
 				v2 mousePosWhenMouseReleased = (v2){(float)mouseX, (float)mouseY};
-				g_Ball.vel = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
+				v2 subtraction = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
+				if(NormV2(subtraction) >= MAX_VEL_NORM){
+					g_Ball.vel = ScaleV2(UnitV2(subtraction), MAX_VEL_NORM);
+				}else{
+					g_Ball.vel = subtraction;
+				}
+				g_Ball.isMoving = MTHLIB_TRUE;
 			}
 		}
 		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
