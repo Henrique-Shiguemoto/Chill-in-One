@@ -20,7 +20,7 @@
 #define BALL_SIZE 		16
 #define HOLE_SIZE 		32
 #define BRICK_SIZE 		64
-#define MAX_VEL_NORM 	100
+#define MAX_VEL_NORM 	300
 
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 
@@ -47,6 +47,8 @@ typedef struct Arrow{
 	Ball* ballParent;
 	v2 offsetFromBall;
 	f32 angle;
+	i32 width;
+	i32 height;
 	SDL_Texture* texture;
 } Arrow;
 

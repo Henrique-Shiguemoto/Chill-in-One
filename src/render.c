@@ -48,8 +48,8 @@ void RenderArrow(void){
 	SDL_Point pt = {32, 64 + 0.5*BALL_SIZE};
 	SDL_Rect destRect = {.x = g_Ball.pos.x - 32 + 0.5*BALL_SIZE,
 						 .y = g_Ball.pos.y - 64,
-						 .w = 64,
-						 .h = 64};
+						 .w = g_Arrow.width,
+						 .h = g_Arrow.height};
 	SDL_RenderCopyEx(g_Window.renderer, g_Arrow.texture, NULL, &destRect, (f64)g_Arrow.angle, &pt, SDL_FLIP_NONE);
 }
 
@@ -62,6 +62,8 @@ void RenderDebugInfo(void){
 		RenderString(debugString, (v2){25, 25}, (v2){400, 20});
 		snprintf(debugString, array_count(debugString), "Ball is Moving = %s", g_Ball.isMoving ? "TRUE" : "FALSE");
 		RenderString(debugString, (v2){25, 55}, (v2){300, 20});
+		snprintf(debugString, array_count(debugString), "Arrow Angle = %.4f", g_Arrow.angle);
+		RenderString(debugString, (v2){25, 85}, (v2){300, 20});
 	}
 }
 
@@ -79,7 +81,9 @@ void RenderGraphics(void){
 	RenderBackgroundAndWalls();
 	RenderHole();
 	RenderBall();
-	RenderArrow();
+	if(!g_Ball.isMoving) {
+		RenderArrow();
+	}
 	RenderDebugInfo();
 	SDL_RenderPresent(g_Window.renderer);
 }

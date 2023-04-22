@@ -11,3 +11,4 @@ typedef struct Input{
 } Input;
 
 void ProcessInput(void);
+void UpdateArrowAngle(void);

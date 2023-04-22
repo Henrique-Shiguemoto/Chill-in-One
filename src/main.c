@@ -9,7 +9,7 @@ SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
 Hole g_Hole = {.pos = {(1 * BRICK_SIZE) + (0.5 * HOLE_SIZE), (1 * BRICK_SIZE) + (0.5 * HOLE_SIZE)}};
 Ball g_Ball = {.pos = {10 * BRICK_SIZE + 1.5 * BALL_SIZE, 8 * BRICK_SIZE + 1.5 * BALL_SIZE}, .vel = {0, 0}, .isMoving = MTHLIB_FALSE};
-Arrow g_Arrow = {.ballParent = &g_Ball, .offsetFromBall = {0, 0}};
+Arrow g_Arrow = {.ballParent = &g_Ball, .offsetFromBall = {0, 0}, .width = 64, .height = 64};
 Input g_Input = {0};
 b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_ShowDebugInfo = MTHLIB_FALSE;
