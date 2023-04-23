@@ -52,6 +52,12 @@ typedef struct Arrow{
 	SDL_Texture* texture;
 } Arrow;
 
+typedef struct Level{
+	Ball ball;
+	Hole hole;
+	b8 tilemap[WINDOW_WIDTH/BRICK_SIZE][WINDOW_HEIGHT/BRICK_SIZE];
+} Level;
+
 b8 InitializeSystems(void);
 b8 CreateWindow(void);
 b8 LoadAssets(void);
