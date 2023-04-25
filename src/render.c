@@ -9,6 +9,8 @@ extern b8 g_ShowDebugInfo;
 extern Hole g_Hole;
 extern Ball g_Ball;
 extern Arrow g_Arrow;
+extern PowerBar g_PowerBar;
+extern i32 g_StrokeCounter;
 extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
 
 void RenderBackgroundAndWalls(void){
@@ -53,7 +55,28 @@ void RenderArrow(void){
 	SDL_RenderCopyEx(g_Window.renderer, g_Arrow.texture, NULL, &destRect, (f64)g_Arrow.angle, &pt, SDL_FLIP_NONE);
 }
 
-void RenderUI(void){ }
+void RenderUI(void){ 
+	//stroke counter
+	char uiString[64];
+	snprintf(uiString, array_count(uiString), "Stroke Counter = %i", g_StrokeCounter);
+	RenderString(uiString, (v2){0.5*WINDOW_WIDTH - 150, 595}, (v2){300, 30});
+	
+	//power meter background
+	SDL_Rect destRectBackground = {.x = WINDOW_WIDTH - 88 - 0.5*(BRICK_SIZE - 48),
+						 			.y = BRICK_SIZE / 8,
+						 			.w = 128,
+						 			.h = 128};
+	SDL_RenderCopy(g_Window.renderer, g_PowerBar.backgroundTexture, NULL, &destRectBackground);
+
+	//power meter foreground
+	SDL_Rect destRectForeground = {.x = WINDOW_WIDTH - 88 - 0.5*(BRICK_SIZE - 48) + 1,
+						 			.y = BRICK_SIZE / 8,
+						 			.w = 128,
+						 			.h = (g_PowerBar.currentPower / MAX_VEL_NORM) * 128};
+	SDL_RenderCopy(g_Window.renderer, g_PowerBar.foregroundTexture, NULL, &destRectForeground);
+
+
+}
 
 void RenderDebugInfo(void){
 	if(g_ShowDebugInfo == MTHLIB_TRUE){
@@ -61,9 +84,9 @@ void RenderDebugInfo(void){
 		snprintf(debugString, array_count(debugString), "Ball's Velocity = (%.4f, %.4f)", g_Ball.vel.x, g_Ball.vel.y);
 		RenderString(debugString, (v2){25, 25}, (v2){400, 20});
 		snprintf(debugString, array_count(debugString), "Ball is Moving = %s", g_Ball.isMoving ? "TRUE" : "FALSE");
-		RenderString(debugString, (v2){25, 55}, (v2){300, 20});
-		snprintf(debugString, array_count(debugString), "Arrow Angle = %.4f", g_Arrow.angle);
-		RenderString(debugString, (v2){25, 85}, (v2){300, 20});
+		RenderString(debugString, (v2){25, 45}, (v2){300, 20});
+		snprintf(debugString, array_count(debugString), "Stroke Power = %f", g_PowerBar.currentPower);
+		RenderString(debugString, (v2){25, 65}, (v2){300, 20});
 	}
 }
 
@@ -81,6 +104,7 @@ void RenderGraphics(void){
 	RenderBackgroundAndWalls();
 	RenderHole();
 	RenderBall();
+	RenderUI();
 	if(!g_Ball.isMoving) {
 		RenderArrow();
 	}

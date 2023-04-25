@@ -12,3 +12,5 @@ typedef struct Input{
 
 void ProcessInput(void);
 void UpdateArrowAngle(void);
+void UpdatePowerBar(void);
+v2 GetMousePosition(void);

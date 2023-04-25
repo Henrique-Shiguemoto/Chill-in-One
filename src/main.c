@@ -11,8 +11,10 @@ Hole g_Hole = {.pos = {(1 * BRICK_SIZE) + (0.5 * HOLE_SIZE), (1 * BRICK_SIZE) + 
 Ball g_Ball = {.pos = {10 * BRICK_SIZE + 1.5 * BALL_SIZE, 8 * BRICK_SIZE + 1.5 * BALL_SIZE}, .vel = {0, 0}, .isMoving = MTHLIB_FALSE};
 Arrow g_Arrow = {.ballParent = &g_Ball, .offsetFromBall = {0, 0}, .width = 64, .height = 64};
 Input g_Input = {0};
+PowerBar g_PowerBar = {.currentPower = 0.0f};
 b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_ShowDebugInfo = MTHLIB_FALSE;
+i32 g_StrokeCounter = 0;
 b8 g_TileMap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
@@ -122,6 +124,18 @@ b8 LoadAssets(void){
 	}
 	g_Arrow.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/arrow.png");
 	if(g_Arrow.texture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
+	}
+	g_PowerBar.backgroundTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/powerMeterBackground.png");
+	if(g_PowerBar.backgroundTexture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
+	}
+	g_PowerBar.foregroundTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/powerMeterForeground.png");
+	if(g_PowerBar.foregroundTexture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
 		return MTHLIB_FALSE;

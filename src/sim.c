@@ -54,7 +54,7 @@ OutOfBrickCollisionDetection:
 	v2 ballAABBOffset = (v2){BALL_SIZE, BALL_SIZE};
 	v2 holeCircleOffset = (v2){0.5*HOLE_SIZE, 0.5*HOLE_SIZE};
 	AABB2D ballAABB = (AABB2D){.min = g_Ball.pos, .max = AddV2(g_Ball.pos, ballAABBOffset)};
-	sphere2D holeCircle = (sphere2D){.center = AddV2(g_Hole.pos, holeCircleOffset), .radius = 0.5*HOLE_SIZE};
+	sphere2D holeCircle = (sphere2D){.center = AddV2(g_Hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
 	if(CollisionSphere2DAndAABB2D(ballAABB, holeCircle)){
 		//Ball and hole collided
 		printf("You Won!\n");

@@ -58,6 +58,12 @@ typedef struct Level{
 	b8 tilemap[WINDOW_WIDTH/BRICK_SIZE][WINDOW_HEIGHT/BRICK_SIZE];
 } Level;
 
+typedef struct PowerBar{
+	SDL_Texture* backgroundTexture;
+	SDL_Texture* foregroundTexture;
+	f32 currentPower;
+} PowerBar;
+
 b8 InitializeSystems(void);
 b8 CreateWindow(void);
 b8 LoadAssets(void);
