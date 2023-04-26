@@ -15,6 +15,14 @@ PowerBar g_PowerBar = {.currentPower = 0.0f};
 b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_ShowDebugInfo = MTHLIB_FALSE;
 i32 g_StrokeCounter = 0;
+SDL_AudioSpec g_SongSpec = {0};
+u32 g_SongLength = 0;
+u8* g_SongBuffer = NULL;
+SDL_AudioSpec g_CollisionAudioSpec = {0};
+u32 g_CollisionAudioLength = 0;
+u8* g_CollisionAudioBuffer = NULL;
+SDL_AudioDeviceID g_SongDevice = 0;
+SDL_AudioDeviceID g_AudioDevice = 0;
 b8 g_TileMap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
@@ -36,6 +44,11 @@ int main(void){
 	g_GameIsRunning = MTHLIB_TRUE;
 
 	//Game Loop
+	int status = SDL_QueueAudio(g_SongDevice, g_SongBuffer, g_SongLength);
+	if(status < 0){
+		fprintf(stderr, SDL_GetError());
+	}
+	SDL_PauseAudioDevice(g_SongDevice, 0);
 	while(g_GameIsRunning){
 		u32 frameStart = SDL_GetTicks();
 		ProcessInput();
@@ -46,6 +59,7 @@ int main(void){
 			SDL_Delay((1000 / DESIRED_FPS) - (frameEnd - frameStart));
 		}
 	}
+	SDL_PauseAudioDevice(g_SongDevice, 0);
 	
 quit:
 	//Freeing memory and quitting subsystems
@@ -74,7 +88,7 @@ b8 CreateWindow(void){
 
 b8 InitializeSystems(void){
 	//SDL Initialization
-	if(SDL_Init(SDL_INIT_VIDEO) < 0){
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
 		//Error initializing SDL
 		fprintf(stderr, SDL_GetError());
 		return MTHLIB_FALSE;
@@ -93,6 +107,7 @@ b8 InitializeSystems(void){
 		fprintf(stderr, TTF_GetError());
 		return MTHLIB_FALSE;
 	}
+
 	return MTHLIB_TRUE;
 }
 
@@ -146,19 +161,49 @@ b8 LoadAssets(void){
 		fprintf(stderr, TTF_GetError());
 		return MTHLIB_FALSE;
 	}
+	if(SDL_LoadWAV("assets/sounds/music/Song2-lowVolume.wav", &g_SongSpec, &g_SongBuffer, &g_SongLength) == NULL){
+		//Error loading wav
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	if(SDL_LoadWAV("assets/sounds/sfx/Hit_Hurt3.wav", &g_CollisionAudioSpec, &g_CollisionAudioBuffer, &g_CollisionAudioLength) == NULL){
+		//Error loading wav
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	g_SongDevice = SDL_OpenAudioDevice(NULL, 0, &g_SongSpec, NULL, 0);
+	if(g_SongDevice == 0){
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	g_AudioDevice = SDL_OpenAudioDevice(NULL, 0, &g_SongSpec, NULL, 0);
+	if(g_AudioDevice == 0){
+		fprintf(stderr, SDL_GetError());
+		return MTHLIB_FALSE;
+	}
 	return MTHLIB_TRUE;
 }
 
 void QuitGame(void){
-	//Freeing memory
 	SDL_DestroyTexture(g_Hole.texture);
 	SDL_DestroyTexture(g_Ball.texture);
 	SDL_DestroyTexture(g_BrickTile);
 	SDL_DestroyTexture(g_BackgroundTile);
+	SDL_DestroyTexture(g_Arrow.texture);
+	SDL_DestroyTexture(g_PowerBar.backgroundTexture);
+	SDL_DestroyTexture(g_PowerBar.foregroundTexture);
+	
 	SDL_DestroyRenderer(g_Window.renderer);
 	SDL_DestroyWindow(g_Window.window);
+	
+	TTF_CloseFont(g_Font);
 
-	//Quiting subsystems
+	SDL_FreeWAV(g_SongBuffer);
+	SDL_FreeWAV(g_CollisionAudioBuffer);
+
+	SDL_CloseAudioDevice(g_SongDevice);
+	SDL_CloseAudioDevice(g_AudioDevice);
+
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();

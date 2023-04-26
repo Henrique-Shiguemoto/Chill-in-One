@@ -6,6 +6,10 @@ extern Ball g_Ball;
 extern Hole g_Hole;
 extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
 extern b8 g_GameIsRunning;
+extern SDL_AudioSpec g_CollisionAudioSpec;
+extern u32 g_CollisionAudioLength;
+extern u8* g_CollisionAudioBuffer;
+extern SDL_AudioDeviceID g_AudioDevice;
 
 void SimulateWorld(void){
 
@@ -26,6 +30,12 @@ void SimulateWorld(void){
 						g_Ball.vel.x *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
+					
+					int status = SDL_QueueAudio(g_AudioDevice, g_CollisionAudioBuffer, g_CollisionAudioLength);
+					if(status < 0){
+						fprintf(stderr, SDL_GetError());
+					}
+					SDL_PauseAudioDevice(g_AudioDevice, 0);
 				}
 
 				//Checking collision on Y axis
@@ -35,6 +45,12 @@ void SimulateWorld(void){
 						g_Ball.vel.y *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
+					
+					int status = SDL_QueueAudio(g_AudioDevice, g_CollisionAudioBuffer, g_CollisionAudioLength);
+					if(status < 0){
+						fprintf(stderr, SDL_GetError());
+					}
+					SDL_PauseAudioDevice(g_AudioDevice, 0);
 				}
 			}
 			if(alreadyCollided){
