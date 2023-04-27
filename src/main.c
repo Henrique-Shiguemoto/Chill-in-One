@@ -2,27 +2,15 @@
 #include "input.h"
 #include "render.h"
 #include "sim.h"
+#include "parseLevel.h"
 
 Window g_Window = {0};
 SDL_Texture* g_BackgroundTile = NULL;
 SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
+
 Hole g_Hole = {.pos = {(1 * BRICK_SIZE) + (0.5 * HOLE_SIZE), (1 * BRICK_SIZE) + (0.5 * HOLE_SIZE)}};
 Ball g_Ball = {.pos = {10 * BRICK_SIZE + 1.5 * BALL_SIZE, 8 * BRICK_SIZE + 1.5 * BALL_SIZE}, .vel = {0, 0}, .isMoving = MTHLIB_FALSE};
-Arrow g_Arrow = {.ballParent = &g_Ball, .offsetFromBall = {0, 0}, .width = 64, .height = 64};
-Input g_Input = {0};
-PowerBar g_PowerBar = {.currentPower = 0.0f};
-b8 g_GameIsRunning = MTHLIB_FALSE;
-b8 g_ShowDebugInfo = MTHLIB_FALSE;
-i32 g_StrokeCounter = 0;
-SDL_AudioSpec g_SongSpec = {0};
-u32 g_SongLength = 0;
-u8* g_SongBuffer = NULL;
-SDL_AudioSpec g_CollisionAudioSpec = {0};
-u32 g_CollisionAudioLength = 0;
-u8* g_CollisionAudioBuffer = NULL;
-SDL_AudioDeviceID g_SongDevice = 0;
-SDL_AudioDeviceID g_AudioDevice = 0;
 b8 g_TileMap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1},
 												   					{1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
@@ -34,10 +22,30 @@ b8 g_TileMap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE] = { {1, 1, 1, 1,
 												   					{1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1},
 												   					{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
+Arrow g_Arrow = {.ballParent = &g_Ball, .offsetFromBall = {0, 0}, .width = 64, .height = 64};
+PowerBar g_PowerBar = {.currentPower = 0.0f};
+i32 g_StrokeCounter = 0;
+
+Input g_Input = {0};
+
+b8 g_GameIsRunning = MTHLIB_FALSE;
+b8 g_ShowDebugInfo = MTHLIB_FALSE;
+
+SDL_AudioSpec g_SongSpec = {0};
+u32 g_SongLength = 0;
+u8* g_SongBuffer = NULL;
+SDL_AudioSpec g_CollisionAudioSpec = {0};
+u32 g_CollisionAudioLength = 0;
+u8* g_CollisionAudioBuffer = NULL;
+SDL_AudioDeviceID g_SongDevice = 0;
+SDL_AudioDeviceID g_AudioDevice = 0;
+
 int main(void){
 	if(!InitializeSystems()) goto quit;
 	if(!CreateWindow()) goto quit;
 	if(!LoadAssets()) goto quit;
+
+	ParseLevel("Hello World!");
 
 	//Now that we had no problems initializing SDL and
 	//		creating a window, we can run the game
