@@ -22,6 +22,8 @@
 #define BRICK_SIZE 		64
 #define MAX_VEL_NORM 	300
 
+#define LEVEL_COUNT 	1
+
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 
 #define DEBUG
@@ -44,7 +46,6 @@ typedef struct Hole{
 } Hole;
 
 typedef struct Arrow{
-	Ball* ballParent;
 	v2 offsetFromBall;
 	f32 angle;
 	i32 width;
@@ -52,10 +53,19 @@ typedef struct Arrow{
 	SDL_Texture* texture;
 } Arrow;
 
+typedef struct Audio{
+	SDL_AudioDeviceID deviceID;
+	u8* buffer;
+	u32 length;
+	SDL_AudioSpec spec;
+	b8 isLooping;
+} Audio;
+
 typedef struct Level{
 	Ball ball;
 	Hole hole;
-	b8 tilemap[WINDOW_WIDTH/BRICK_SIZE][WINDOW_HEIGHT/BRICK_SIZE];
+	u8 tilemap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE];
+	Audio song;
 } Level;
 
 typedef struct PowerBar{

@@ -1,5 +1,5 @@
-ball=posX posY 
-hole=posX posY
+ball=664 536
+hole=80 80
 tilemap=1 1 1 1 1 1 1 1 1 1 1 1
 		1 0 1 0 1 0 0 1 0 0 0 1
 		1 0 1 0 1 0 0 0 0 0 0 1

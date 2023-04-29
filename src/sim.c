@@ -2,55 +2,50 @@
 #include "main.h"
 #include "render.h"
 
-extern Ball g_Ball;
-extern Hole g_Hole;
-extern b8 g_TileMap[WINDOW_HEIGHT/64][WINDOW_WIDTH/64];
+extern Level* level1;
 extern b8 g_GameIsRunning;
-extern SDL_AudioSpec g_CollisionAudioSpec;
-extern u32 g_CollisionAudioLength;
-extern u8* g_CollisionAudioBuffer;
-extern SDL_AudioDeviceID g_AudioDevice;
+extern Audio g_CollisionSFX;
 
 void SimulateWorld(void){
 
 	//Checking collisions with brick tiles
-	v2 newBallPosX = (v2){g_Ball.pos.x + g_Ball.vel.x * DESIRED_DELTA, g_Ball.pos.y};
-	v2 newBallPosY = (v2){g_Ball.pos.x, g_Ball.pos.y + g_Ball.vel.y * DESIRED_DELTA};
+	v2 newBallPosX = (v2){level1->ball.pos.x + level1->ball.vel.x * DESIRED_DELTA, level1->ball.pos.y};
+	v2 newBallPosY = (v2){level1->ball.pos.x, level1->ball.pos.y + level1->ball.vel.y * DESIRED_DELTA};
 
 	b8 alreadyCollided = MTHLIB_FALSE;
 	for(i32 i = 0; i < WINDOW_HEIGHT/64; i++){
 		for(i32 j = 0; j < WINDOW_WIDTH/64; j++){
-			if(g_TileMap[i][j] == BRICK_TILE){
+			if(level1->tilemap[i][j] == BRICK_TILE){
 				AABB2D brick = (AABB2D){.min = {j * BRICK_SIZE, i * BRICK_SIZE}, .max = {((j + 1) * BRICK_SIZE) - 1, ((i + 1) * BRICK_SIZE) - 1}};
 
 				//Checking collision on X axis
 				AABB2D ballX = (AABB2D){.min = newBallPosX, .max = {newBallPosX.x + BALL_SIZE, newBallPosX.y + BALL_SIZE}};
 				if(CollisionAABB2D(ballX, brick)){
 					if(ballX.min.x < brick.max.x || ballX.max.x > brick.min.x){
-						g_Ball.vel.x *= -1;
+						level1->ball.vel.x *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
 					
-					int status = SDL_QueueAudio(g_AudioDevice, g_CollisionAudioBuffer, g_CollisionAudioLength);
+					int status = SDL_QueueAudio(g_CollisionSFX.deviceID, g_CollisionSFX.buffer, g_CollisionSFX.length);
 					if(status < 0){
 						fprintf(stderr, SDL_GetError());
 					}
-					SDL_PauseAudioDevice(g_AudioDevice, 0);
+					SDL_PauseAudioDevice(g_CollisionSFX.deviceID, 0);
 				}
 
 				//Checking collision on Y axis
 				AABB2D ballY = (AABB2D){.min = newBallPosY, .max = {newBallPosY.x + BALL_SIZE, newBallPosY.y + BALL_SIZE}};
 				if(CollisionAABB2D(ballY, brick)){
 					if(ballY.min.y < brick.max.y || ballY.max.y > brick.min.y){
-						g_Ball.vel.y *= -1;
+						level1->ball.vel.y *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
 					
-					int status = SDL_QueueAudio(g_AudioDevice, g_CollisionAudioBuffer, g_CollisionAudioLength);
+					int status = SDL_QueueAudio(g_CollisionSFX.deviceID, g_CollisionSFX.buffer, g_CollisionSFX.length);
 					if(status < 0){
 						fprintf(stderr, SDL_GetError());
 					}
-					SDL_PauseAudioDevice(g_AudioDevice, 0);
+					SDL_PauseAudioDevice(g_CollisionSFX.deviceID, 0);
 				}
 			}
 			if(alreadyCollided){
@@ -61,16 +56,16 @@ void SimulateWorld(void){
 
 OutOfBrickCollisionDetection:
 	//Update ball's position
-	g_Ball.pos = (v2){g_Ball.pos.x + g_Ball.vel.x * DESIRED_DELTA, g_Ball.pos.y + g_Ball.vel.y * DESIRED_DELTA};
+	level1->ball.pos = (v2){level1->ball.pos.x + level1->ball.vel.x * DESIRED_DELTA, level1->ball.pos.y + level1->ball.vel.y * DESIRED_DELTA};
 
 	//Update ball's velocity
-	g_Ball.vel = ScaleV2(g_Ball.vel, 0.97f);
+	level1->ball.vel = ScaleV2(level1->ball.vel, 0.97f);
 
 	//Check collision with hole
 	v2 ballAABBOffset = (v2){BALL_SIZE, BALL_SIZE};
 	v2 holeCircleOffset = (v2){0.5*HOLE_SIZE, 0.5*HOLE_SIZE};
-	AABB2D ballAABB = (AABB2D){.min = g_Ball.pos, .max = AddV2(g_Ball.pos, ballAABBOffset)};
-	sphere2D holeCircle = (sphere2D){.center = AddV2(g_Hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
+	AABB2D ballAABB = (AABB2D){.min = level1->ball.pos, .max = AddV2(level1->ball.pos, ballAABBOffset)};
+	sphere2D holeCircle = (sphere2D){.center = AddV2(level1->hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
 	if(CollisionSphere2DAndAABB2D(ballAABB, holeCircle)){
 		//Ball and hole collided
 		printf("You Won!\n");
@@ -78,9 +73,9 @@ OutOfBrickCollisionDetection:
 	}
 
 	// Checking to see if the ball is currently moving or not
-	if(NormV2(g_Ball.vel) <= 0.01f){
-		g_Ball.isMoving = MTHLIB_FALSE;
-		g_Ball.vel = (v2){0};
+	if(NormV2(level1->ball.vel) <= 0.01f){
+		level1->ball.isMoving = MTHLIB_FALSE;
+		level1->ball.vel = (v2){0};
 	}
 }
 

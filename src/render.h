@@ -2,7 +2,7 @@
 
 #include "mthlib.h"
 
-void RenderBackgroundAndWalls(void);
+void RenderTilemap(void);
 void RenderHole(void);
 void RenderBall(void);
 void RenderArrow(void);
