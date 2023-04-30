@@ -5,7 +5,7 @@
 extern b8 g_GameIsRunning;
 extern b8 g_ShowDebugInfo;
 extern Input g_Input;
-extern Level* level1;
+extern Level* level;
 extern Arrow g_Arrow;
 extern PowerBar g_PowerBar;
 extern i32 g_StrokeCounter;
@@ -31,7 +31,7 @@ void ProcessInput(void){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
 			}
 		}
-		if(event.button.button == SDL_BUTTON_LEFT && !level1->ball.isMoving){
+		if(event.button.button == SDL_BUTTON_LEFT && !level->ball.isMoving){
 			if(event.type == SDL_MOUSEBUTTONDOWN){
 				mouseIsPressed = MTHLIB_TRUE;
 				mousePosWhenMousePressed = GetMousePosition();
@@ -41,11 +41,11 @@ void ProcessInput(void){
 				v2 mousePosWhenMouseReleased = GetMousePosition();
 				v2 subtraction = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
 				if(NormV2(subtraction) >= MAX_VEL_NORM){
-					level1->ball.vel = ScaleV2(UnitV2(subtraction), MAX_VEL_NORM);
+					level->ball.vel = ScaleV2(UnitV2(subtraction), MAX_VEL_NORM);
 				}else{
-					level1->ball.vel = subtraction;
+					level->ball.vel = subtraction;
 				}
-				level1->ball.isMoving = MTHLIB_TRUE;
+				level->ball.isMoving = MTHLIB_TRUE;
 				g_StrokeCounter++;
 			}
 		}
@@ -61,7 +61,7 @@ void UpdateArrowAngle(void){
 	v2 mousePosition = GetMousePosition();
 
 	//Calculating arrow direction
-	v2 ballCenter = (v2){level1->ball.pos.x + 0.5*BALL_SIZE, level1->ball.pos.y + 0.5*BALL_SIZE};
+	v2 ballCenter = (v2){level->ball.pos.x + 0.5*BALL_SIZE, level->ball.pos.y + 0.5*BALL_SIZE};
 	v2 dir = SubtractV2(ballCenter, mousePosition);
 	
 	//Unit X axis vector
@@ -72,7 +72,7 @@ void UpdateArrowAngle(void){
 	if (dirNorm != 0.0f){
 		f32 angleInRadians = 0.0f;
 		f32 angleInDegrees = 0.0f;
-		if(level1->ball.pos.y < mousePosition.y){
+		if(level->ball.pos.y < mousePosition.y){
 			//Mouse is under the ball
 			angleInRadians = acosf(DotV2(ScaleV2(dir, -1), horizontalVector) / dirNorm);
 			angleInDegrees += 270;

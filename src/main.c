@@ -9,7 +9,7 @@ SDL_Texture* g_BackgroundTile = NULL;
 SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
 
-Level* level1 = NULL;
+Level* level = NULL;
 
 Arrow g_Arrow = {.offsetFromBall = {0, 0}, .width = 64, .height = 64};
 PowerBar g_PowerBar = {.currentPower = 0.0f};
@@ -26,19 +26,21 @@ int main(void){
 	if(!InitializeSystems()) goto quit;
 	if(!CreateWindow()) goto quit;
 
-	level1 = CreateLevel("src/levels/lvl1.txt", "assets/sounds/music/Song2-lowVolume.wav");
+	level = CreateLevel("src/levels/lvl1.txt", "assets/sounds/music/Song2-lowVolume.wav");
 	if(!LoadAssets()) goto quit;
 
 	//Now that we had no problems initializing SDL and
 	//		creating a window, we can run the game
 	g_GameIsRunning = MTHLIB_TRUE;
 
-	//Game Loop
-	int status = SDL_QueueAudio(level1->song.deviceID, level1->song.buffer, level1->song.length);
+	//level song init
+	int status = SDL_QueueAudio(level->song.deviceID, level->song.buffer, level->song.length);
 	if(status < 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
 	}
-	SDL_PauseAudioDevice(level1->song.deviceID, 0);
+	SDL_PauseAudioDevice(level->song.deviceID, 0);
+
+	//Game Loop
 	while(g_GameIsRunning){
 		u32 frameStart = SDL_GetTicks();
 		ProcessInput();
@@ -49,7 +51,7 @@ int main(void){
 			SDL_Delay((1000 / DESIRED_FPS) - (frameEnd - frameStart));
 		}
 	}
-	SDL_PauseAudioDevice(level1->song.deviceID, 0);
+	SDL_PauseAudioDevice(level->song.deviceID, 0);
 	
 quit:
 	//Freeing memory and quitting subsystems
@@ -111,18 +113,18 @@ b8 LoadAssets(void){
 	}
 	g_BrickTile = IMG_LoadTexture(g_Window.renderer, "assets/images/brick.png");
 	if(g_BrickTile == NULL){
+		//Error loading text
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
+	}
+	level->hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
+	if(level->hole.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
 		return MTHLIB_FALSE;
 	}
-	level1->hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
-	if(level1->hole.texture == NULL){
-		//Error loading texture
-		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
-	}
-	level1->ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
-	if(level1->ball.texture == NULL){
+	level->ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
+	if(level->ball.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
 		return MTHLIB_FALSE;
@@ -151,7 +153,7 @@ b8 LoadAssets(void){
 		fprintf(stderr, TTF_GetError());
 		return MTHLIB_FALSE;
 	}
-	if(SDL_LoadWAV("assets/sounds/music/Song2-lowVolume.wav", &level1->song.spec, &level1->song.buffer, &level1->song.length) == NULL){
+	if(SDL_LoadWAV("assets/sounds/music/Song2-lowVolume.wav", &level->song.spec, &level->song.buffer, &level->song.length) == NULL){
 		//Error loading wav
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
@@ -161,12 +163,12 @@ b8 LoadAssets(void){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}
-	level1->song.deviceID = SDL_OpenAudioDevice(NULL, 0, &level1->song.spec, NULL, 0);
-	if(level1->song.deviceID == 0){
+	level->song.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
+	if(level->song.deviceID == 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}
-	g_CollisionSFX.deviceID = SDL_OpenAudioDevice(NULL, 0, &level1->song.spec, NULL, 0);
+	g_CollisionSFX.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
 	if(g_CollisionSFX.deviceID == 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
@@ -175,8 +177,8 @@ b8 LoadAssets(void){
 }
 
 void QuitGame(void){
-	SDL_DestroyTexture(level1->hole.texture);
-	SDL_DestroyTexture(level1->ball.texture);
+	SDL_DestroyTexture(level->hole.texture);
+	SDL_DestroyTexture(level->ball.texture);
 	SDL_DestroyTexture(g_BrickTile);
 	SDL_DestroyTexture(g_BackgroundTile);
 	SDL_DestroyTexture(g_Arrow.texture);
@@ -188,10 +190,10 @@ void QuitGame(void){
 	
 	TTF_CloseFont(g_Font);
 
-	SDL_FreeWAV(level1->song.buffer);
+	SDL_FreeWAV(level->song.buffer);
 	SDL_FreeWAV(g_CollisionSFX.buffer);
 
-	SDL_CloseAudioDevice(level1->song.deviceID);
+	SDL_CloseAudioDevice(level->song.deviceID);
 	SDL_CloseAudioDevice(g_CollisionSFX.deviceID);
 
 	TTF_Quit();
