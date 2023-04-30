@@ -91,7 +91,6 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 			while(!CheckTileType(currentCharacter - '0')){
 				currentCharacter = fgetc(levelConfigFile);
 			}
-			// printf("tile(%d, %d) = %s\n", i, j, currentCharacter == '0' ? "BACKGROUND" : "BRICK");
 			level->tilemap[i][j] = currentCharacter - '0';
 		}
 	}
@@ -102,6 +101,7 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return NULL;
 	}
+	level->song.isLooping = MTHLIB_TRUE;
 
 	fclose(levelConfigFile);
 	return level;
