@@ -11,7 +11,7 @@ This is a 2D golf game prototype made with C and SDL2. Main purpose was to impro
 
 # How to Run
 
-On the root directory, type: <code>make run</code>>
+On the root directory, type: <code>make run</code>
 
 # Screenshots
 
