@@ -2,5 +2,5 @@
 
 #include "main.h"
 
-Audio* CreateAudio(const char* audioPath);
+Audio CreateAudio(const char* audioPath);
 void FreeAudio(Audio* audio);

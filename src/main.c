@@ -3,6 +3,7 @@
 #include "render.h"
 #include "sim.h"
 #include "parseLevel.h"
+#include "audio.h"
 
 Window g_Window = {0};
 SDL_Texture* g_BackgroundTile = NULL;
@@ -190,11 +191,8 @@ void QuitGame(void){
 	
 	TTF_CloseFont(g_Font);
 
-	SDL_FreeWAV(level->song.buffer);
-	SDL_FreeWAV(g_CollisionSFX.buffer);
-
-	SDL_CloseAudioDevice(level->song.deviceID);
-	SDL_CloseAudioDevice(g_CollisionSFX.deviceID);
+	FreeAudio(&level->song);
+	FreeAudio(&g_CollisionSFX);
 
 	TTF_Quit();
 	IMG_Quit();

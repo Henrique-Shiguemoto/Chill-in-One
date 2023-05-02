@@ -1,6 +1,9 @@
 #include "parseLevel.h"
+#include "audio.h"
+// #include "main.h"
 #include <stdlib.h>
 
+extern Window g_Window;
 extern Level* level1;
 
 Level* CreateLevel(const char* levelPath, const char* songLevelPath){
@@ -96,12 +99,20 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 	}
 
 	//Loading level song
-	if(SDL_LoadWAV(songLevelPath, &level->song.spec, &level->song.buffer, &level->song.length) == NULL){
-		//Error loading wav
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return NULL;
+	level->song = CreateAudio(songLevelPath);
+
+	level->hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
+	if(level->hole.texture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
 	}
-	level->song.isLooping = MTHLIB_TRUE;
+	level->ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
+	if(level->ball.texture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
+	}
 
 	fclose(levelConfigFile);
 	return level;

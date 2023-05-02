@@ -1,6 +1,7 @@
 #include "sim.h"
 #include "main.h"
 #include "render.h"
+#include "parseLevel.h"
 
 extern Level* level;
 extern b8 g_GameIsRunning;
@@ -67,9 +68,8 @@ OutOfBrickCollisionDetection:
 	AABB2D ballAABB = (AABB2D){.min = level->ball.pos, .max = AddV2(level->ball.pos, ballAABBOffset)};
 	sphere2D holeCircle = (sphere2D){.center = AddV2(level->hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
 	if(CollisionSphere2DAndAABB2D(ballAABB, holeCircle)){
-		//Ball and hole collided
-		printf("You Won!\n");
-		g_GameIsRunning = MTHLIB_FALSE;
+		level = CreateLevel("src/levels/lvl2.txt", "assets/sounds/music/Song4.wav");
+		return;
 	}
 
 	// Checking to see if the ball is currently moving or not
