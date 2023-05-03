@@ -34,13 +34,6 @@ int main(void){
 	//		creating a window, we can run the game
 	g_GameIsRunning = MTHLIB_TRUE;
 
-	//level song init
-	int status = SDL_QueueAudio(level->song.deviceID, level->song.buffer, level->song.length);
-	if(status < 0){
-		fprintf(stderr, "%s\n", SDL_GetError());
-	}
-	SDL_PauseAudioDevice(level->song.deviceID, 0);
-
 	//Game Loop
 	while(g_GameIsRunning){
 		u32 frameStart = SDL_GetTicks();
@@ -51,8 +44,7 @@ int main(void){
 		if((frameEnd - frameStart) < (1000 / DESIRED_FPS)){
 			SDL_Delay((1000 / DESIRED_FPS) - (frameEnd - frameStart));
 		}
-	}
-	SDL_PauseAudioDevice(level->song.deviceID, 0);
+	}	
 	
 quit:
 	//Freeing memory and quitting subsystems
@@ -154,18 +146,10 @@ b8 LoadAssets(void){
 		fprintf(stderr, TTF_GetError());
 		return MTHLIB_FALSE;
 	}
-	if(SDL_LoadWAV("assets/sounds/music/Song2-lowVolume.wav", &level->song.spec, &level->song.buffer, &level->song.length) == NULL){
-		//Error loading wav
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
-	}
+	
+	// For some reason the pitch sounds different if I use CreateAudio here...
 	if(SDL_LoadWAV("assets/sounds/sfx/Hit_Hurt3.wav", &g_CollisionSFX.spec, &g_CollisionSFX.buffer, &g_CollisionSFX.length) == NULL){
 		//Error loading wav
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
-	}
-	level->song.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
-	if(level->song.deviceID == 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}

@@ -1,6 +1,5 @@
 #include "parseLevel.h"
 #include "audio.h"
-// #include "main.h"
 #include <stdlib.h>
 
 extern Window g_Window;
@@ -113,6 +112,8 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 		fprintf(stderr, IMG_GetError());
 		return MTHLIB_FALSE;
 	}
+
+	level->firstInitialized = MTHLIB_TRUE;
 
 	fclose(levelConfigFile);
 	return level;

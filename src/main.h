@@ -58,7 +58,6 @@ typedef struct Audio{
 	u8* buffer;
 	u32 length;
 	SDL_AudioSpec spec;
-	b8 isLooping;
 } Audio;
 
 typedef struct Level{
@@ -66,6 +65,7 @@ typedef struct Level{
 	Hole hole;
 	u8 tilemap[WINDOW_HEIGHT/BRICK_SIZE][WINDOW_WIDTH/BRICK_SIZE];
 	Audio song;
+	b8 firstInitialized;
 } Level;
 
 typedef struct PowerBar{

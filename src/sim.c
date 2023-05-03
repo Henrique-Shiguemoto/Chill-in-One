@@ -1,6 +1,7 @@
 #include "sim.h"
 #include "main.h"
 #include "render.h"
+#include "audio.h"
 #include "parseLevel.h"
 
 extern Level* level;
@@ -8,6 +9,11 @@ extern b8 g_GameIsRunning;
 extern Audio g_CollisionSFX;
 
 void SimulateWorld(void){
+	if(level->firstInitialized){
+		//if the level was just created, we start playing the level song
+		PlayAudio(&level->song);
+		level->firstInitialized = MTHLIB_FALSE;
+	}
 
 	//Checking collisions with brick tiles
 	v2 newBallPosX = (v2){level->ball.pos.x + level->ball.vel.x * DESIRED_DELTA, level->ball.pos.y};
@@ -26,12 +32,7 @@ void SimulateWorld(void){
 						level->ball.vel.x *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
-					
-					int status = SDL_QueueAudio(g_CollisionSFX.deviceID, g_CollisionSFX.buffer, g_CollisionSFX.length);
-					if(status < 0){
-						fprintf(stderr, SDL_GetError());
-					}
-					SDL_PauseAudioDevice(g_CollisionSFX.deviceID, 0);
+					PlayAudio(&g_CollisionSFX);
 				}
 
 				//Checking collision on Y axis
@@ -41,12 +42,7 @@ void SimulateWorld(void){
 						level->ball.vel.y *= -1;
 					}
 					alreadyCollided = MTHLIB_TRUE;
-					
-					int status = SDL_QueueAudio(g_CollisionSFX.deviceID, g_CollisionSFX.buffer, g_CollisionSFX.length);
-					if(status < 0){
-						fprintf(stderr, SDL_GetError());
-					}
-					SDL_PauseAudioDevice(g_CollisionSFX.deviceID, 0);
+					PlayAudio(&g_CollisionSFX);
 				}
 			}
 			if(alreadyCollided){
@@ -68,6 +64,7 @@ OutOfBrickCollisionDetection:
 	AABB2D ballAABB = (AABB2D){.min = level->ball.pos, .max = AddV2(level->ball.pos, ballAABBOffset)};
 	sphere2D holeCircle = (sphere2D){.center = AddV2(level->hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
 	if(CollisionSphere2DAndAABB2D(ballAABB, holeCircle)){
+		StopAudio(&level->song);
 		level = CreateLevel("src/levels/lvl2.txt", "assets/sounds/music/Song4.wav");
 		return;
 	}

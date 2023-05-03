@@ -5,7 +5,7 @@ SRC=src/main.c src/vendor/mthlibc/mthlib.c src/input.c src/render.c src/sim.c sr
 OBJS=main.o mthlib.o input.o render.o sim.o parseLevel.o audio.o
 IFLAGS=-Isrc/include -Isrc/vendor/mthlibc
 LFLAGS=-Lsrc/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-CFLAGS=-g -Wall -Wextra -pedantic -std=c11
+CFLAGS=-g -Wall -Wextra -pedantic -std=c11 -Wno-unused-parameter
 
 all: compile link
 
