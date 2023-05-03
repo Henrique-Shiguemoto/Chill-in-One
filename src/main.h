@@ -8,6 +8,8 @@
 #include "SDL_ttf.h"
 #include "mthlib.h"
 
+#define GAME_NAME 		"Chill-in-One"
+
 #define WINDOW_WIDTH	768
 #define WINDOW_HEIGHT	640
 
@@ -22,7 +24,7 @@
 #define BRICK_SIZE 		64
 #define MAX_VEL_NORM 	300
 
-#define LEVEL_COUNT 	1
+#define LEVEL_COUNT 	3
 
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 

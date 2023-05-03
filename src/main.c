@@ -11,6 +11,13 @@ SDL_Texture* g_BrickTile = NULL;
 TTF_Font* g_Font = NULL;
 
 Level* level = NULL;
+i32 g_CurrentLevel = 0;
+const char* g_LevelPaths[] = {"src/levels/lvl1.txt",
+							"src/levels/lvl2.txt",
+							"src/levels/lvl3.txt"};
+const char* g_LevelSongPaths[] = {"assets/sounds/music/Song2-lowVolume.wav",
+								"assets/sounds/music/Song4.wav",
+								"assets/sounds/music/Song5.wav"};
 
 Arrow g_Arrow = {.offsetFromBall = {0, 0}, .width = 64, .height = 64};
 PowerBar g_PowerBar = {.currentPower = 0.0f};
@@ -27,7 +34,7 @@ int main(void){
 	if(!InitializeSystems()) goto quit;
 	if(!CreateWindow()) goto quit;
 
-	level = CreateLevel("src/levels/lvl1.txt", "assets/sounds/music/Song2-lowVolume.wav");
+	level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
 	if(!LoadAssets()) goto quit;
 
 	//Now that we had no problems initializing SDL and
@@ -54,12 +61,16 @@ quit:
 
 b8 CreateWindow(void){
 	//Creating a window
-	g_Window.window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+	g_Window.window = SDL_CreateWindow(GAME_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 	if(g_Window.window == NULL){
 		//Error creating window
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}
+
+	//Setting the window icon
+	SDL_Surface* iconSurface = IMG_Load("assets/images/ball.png");
+	SDL_SetWindowIcon(g_Window.window, iconSurface);
 
 	//Creating a renderer (with GPU acceleration, we're only using VRAM pixel data, i.e. textures)
 	g_Window.renderer = SDL_CreateRenderer(g_Window.window, -1, SDL_RENDERER_ACCELERATED);
