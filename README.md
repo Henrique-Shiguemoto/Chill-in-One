@@ -2,6 +2,8 @@
 
 This is a 2D golf game prototype made with C and SDL2. Main purpose was to improve SDL2 knowledge.
 
+Songs made by me in Bosca Ceoil and sprites made by me in Piskel.
+
 # Technologies Used
 
 - C 
