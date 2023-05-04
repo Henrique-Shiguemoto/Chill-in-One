@@ -4,12 +4,14 @@
 extern Window g_Window;
 extern SDL_Texture* g_BackgroundTile;
 extern SDL_Texture* g_BrickTile;
+extern SDL_Texture* g_LogoTexture;
 extern TTF_Font* g_Font;
 extern b8 g_ShowDebugInfo;
 extern Arrow g_Arrow;
 extern PowerBar g_PowerBar;
 extern i32 g_StrokeCounter;
 extern Level* level;
+extern GAME_STATE g_GameState;
 
 void RenderTilemap(void){
 	for(i32 y = 0; y < WINDOW_HEIGHT / BRICK_SIZE; y++){
@@ -97,7 +99,20 @@ void RenderString(const char* text, v2 pos, v2 size){
 	SDL_DestroyTexture(fontTexture);
 }
 
-void RenderGraphics(void){
+void RenderStartMenu(void){
+	SDL_RenderClear(g_Window.renderer);
+	RenderTilemap();
+	SDL_Rect destRect = {.x = 0.5 * WINDOW_WIDTH - 0.5 * LOGO_WIDTH,
+						 .y = 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT,
+						 .w = LOGO_WIDTH,
+						 .h = LOGO_HEIGHT};
+	SDL_RenderCopy(g_Window.renderer, g_LogoTexture, NULL, &destRect);
+	RenderString("Start Game", (v2){0.5 * WINDOW_WIDTH - (225 / 2), destRect.y + 160}, (v2){225, 25});
+	RenderString("Quit", (v2){0.5 * WINDOW_WIDTH - (75 / 2), destRect.y + 230}, (v2){75, 25});
+	SDL_RenderPresent(g_Window.renderer);
+}
+
+void RenderLevel(void){
 	SDL_RenderClear(g_Window.renderer);
 	RenderTilemap();
 	RenderHole();
@@ -108,4 +123,35 @@ void RenderGraphics(void){
 	}
 	RenderDebugInfo();
 	SDL_RenderPresent(g_Window.renderer);
+}
+
+void RenderEndMenu(void){
+	SDL_RenderClear(g_Window.renderer);
+	RenderTilemap();
+	RenderString("You Finished!", (v2){0.5*WINDOW_WIDTH - (400 / 2), 0.5*WINDOW_HEIGHT - (55/2)}, (v2){400, 55});
+	RenderString("Press Enter to Restart", (v2){75, WINDOW_HEIGHT - BRICK_SIZE - 70}, (v2){400, 25});
+	RenderString("Press Esc to Quit", (v2){75, WINDOW_HEIGHT - BRICK_SIZE - 35}, (v2){300, 25});
+	SDL_RenderPresent(g_Window.renderer);
+}
+
+void RenderGame(void){
+	//either start render the menu, a level or the end menu
+	switch(g_GameState){
+		case GS_STARTMENU:{
+			RenderStartMenu();
+			break;
+		}
+		case GS_LEVEL:{
+			RenderLevel();
+			break;
+		}
+		case GS_ENDMENU:{
+			RenderEndMenu();
+			break;
+		}
+		default:{
+			fprintf(stderr, "Invalid Game State\n");
+			break;
+		}
+	}
 }

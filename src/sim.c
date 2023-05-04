@@ -6,12 +6,18 @@
 
 extern Level* level;
 extern b8 g_GameIsRunning;
+extern GAME_STATE g_GameState;
 extern Audio g_CollisionSFX;
 extern const char* g_LevelPaths[];
 extern const char* g_LevelSongPaths[];
 extern i32 g_CurrentLevel;
+extern i32 g_StrokeCounter;
 
 void SimulateWorld(void){
+	if(g_GameState != GS_LEVEL){
+		return;
+	}
+
 	if(level->firstInitialized){
 		//if the level was just created, we start playing the level song
 		PlayAudio(&level->song);
@@ -68,6 +74,7 @@ OutOfBrickCollisionDetection:
 	sphere2D holeCircle = (sphere2D){.center = AddV2(level->hole.pos, holeCircleOffset), .radius = 0.35*HOLE_SIZE};
 	if(CollisionSphere2DAndAABB2D(ballAABB, holeCircle)){
 		StopAudio(&level->song);
+		g_StrokeCounter = 0;
 		g_CurrentLevel++;
 		if(g_CurrentLevel < LEVEL_COUNT){
 			level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);

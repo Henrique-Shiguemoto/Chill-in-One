@@ -8,7 +8,10 @@
 Window g_Window = {0};
 SDL_Texture* g_BackgroundTile = NULL;
 SDL_Texture* g_BrickTile = NULL;
+SDL_Texture* g_LogoTexture = NULL;
 TTF_Font* g_Font = NULL;
+
+GAME_STATE g_GameState = 0;
 
 Level* level = NULL;
 i32 g_CurrentLevel = 0;
@@ -37,16 +40,13 @@ int main(void){
 	level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
 	if(!LoadAssets()) goto quit;
 
-	//Now that we had no problems initializing SDL and
-	//		creating a window, we can run the game
+	g_GameState = GS_STARTMENU;
 	g_GameIsRunning = MTHLIB_TRUE;
-
-	//Game Loop
 	while(g_GameIsRunning){
 		u32 frameStart = SDL_GetTicks();
 		ProcessInput();
 		SimulateWorld();
-		RenderGraphics();
+		RenderGame();
 		u32 frameEnd = SDL_GetTicks();
 		if((frameEnd - frameStart) < (1000 / DESIRED_FPS)){
 			SDL_Delay((1000 / DESIRED_FPS) - (frameEnd - frameStart));
@@ -169,6 +169,13 @@ b8 LoadAssets(void){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}
+	g_LogoTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/logo.png");
+	if(g_LogoTexture == NULL){
+		//Error loading texture
+		fprintf(stderr, IMG_GetError());
+		return MTHLIB_FALSE;
+	}
+
 	return MTHLIB_TRUE;
 }
 

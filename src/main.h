@@ -22,6 +22,8 @@
 #define BALL_SIZE 		16
 #define HOLE_SIZE 		32
 #define BRICK_SIZE 		64
+#define LOGO_WIDTH		440
+#define LOGO_HEIGHT		124
 #define MAX_VEL_NORM 	300
 
 #define LEVEL_COUNT 	3
@@ -29,6 +31,12 @@
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 
 #define DEBUG
+
+typedef enum GAME_STATE{
+	GS_STARTMENU = 0,
+	GS_LEVEL 	 = 1,
+	GS_ENDMENU	 = 2
+} GAME_STATE;
 
 typedef struct Window{
 	SDL_Window* window;

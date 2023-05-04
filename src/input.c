@@ -4,6 +4,7 @@
 
 extern b8 g_GameIsRunning;
 extern b8 g_ShowDebugInfo;
+extern GAME_STATE g_GameState;
 extern Input g_Input;
 extern Level* level;
 extern Arrow g_Arrow;
@@ -13,7 +14,53 @@ extern i32 g_StrokeCounter;
 static v2 mousePosWhenMousePressed = {0};
 static b8 mouseIsPressed = MTHLIB_FALSE;
 
-void ProcessInput(void){
+void ProcessInputStartMenu(void){
+	SDL_Event event;
+	while(SDL_PollEvent(&event)){
+		const u8* keyStates = SDL_GetKeyboardState(NULL);
+		g_Input.debugKeyIsDown = keyStates[SDL_SCANCODE_TAB];
+		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
+
+		if(event.type == SDL_QUIT){
+			g_GameIsRunning = MTHLIB_FALSE;
+		}
+		if(event.type == SDL_KEYDOWN){
+			if(g_Input.closeKeyIsDown  && !g_Input.closeKeyWasDown){
+				g_GameIsRunning = MTHLIB_FALSE;
+			}
+			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
+				g_ShowDebugInfo = !g_ShowDebugInfo;
+			}
+		}
+		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
+		g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
+	}
+}
+
+void ProcessInputEndMenu(void){
+	SDL_Event event;
+	while(SDL_PollEvent(&event)){
+		const u8* keyStates = SDL_GetKeyboardState(NULL);
+		g_Input.debugKeyIsDown = keyStates[SDL_SCANCODE_TAB];
+		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
+
+		if(event.type == SDL_QUIT){
+			g_GameIsRunning = MTHLIB_FALSE;
+		}
+		if(event.type == SDL_KEYDOWN){
+			if(g_Input.closeKeyIsDown  && !g_Input.closeKeyWasDown){
+				g_GameIsRunning = MTHLIB_FALSE;
+			}
+			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
+				g_ShowDebugInfo = !g_ShowDebugInfo;
+			}
+		}
+		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
+		g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
+	}	
+}
+
+void ProcessInputLevel(void){
 	SDL_Event event;
 	while(SDL_PollEvent(&event)){
 		const u8* keyStates = SDL_GetKeyboardState(NULL);
@@ -54,6 +101,27 @@ void ProcessInput(void){
 	}
 	UpdateArrowAngle();
 	UpdatePowerBar();
+}
+
+void ProcessInput(void){
+	switch(g_GameState){
+		case GS_STARTMENU:{
+			ProcessInputStartMenu();
+			break;
+		}
+		case GS_LEVEL:{
+			ProcessInputLevel();
+			break;
+		}
+		case GS_ENDMENU:{
+			ProcessInputEndMenu();
+			break;
+		}
+		default:{
+			fprintf(stderr, "Invalid Game State\n");
+			break;
+		}
+	}
 }
 
 void UpdateArrowAngle(void){

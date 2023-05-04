@@ -9,4 +9,7 @@ void RenderArrow(void);
 void RenderUI(void);
 void RenderDebugInfo(void);
 void RenderString(const char* text, v2 pos, v2 size);
-void RenderGraphics(void);
+void RenderGame(void);
+void RenderStartMenu(void);
+void RenderLevel(void);
+void RenderEndMenu(void);
