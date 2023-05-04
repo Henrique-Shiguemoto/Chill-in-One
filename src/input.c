@@ -32,6 +32,32 @@ void ProcessInputStartMenu(void){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
 			}
 		}
+		if(event.button.button == SDL_BUTTON_LEFT){
+			if(event.type == SDL_MOUSEBUTTONDOWN){
+				//verify that the mouse position is at the top of a button
+				v2 mousePosition = GetMousePosition();
+
+				//Hard coding for now (could create some sort of Button struct and so on...)
+				// (v2){0.5 * WINDOW_WIDTH - (225 / 2), 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160}, (v2){225, 25}
+				// (v2){0.5 * WINDOW_WIDTH - (75 / 2), 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230}, (v2){75, 25}
+				AABB2D playButtonAABB = (AABB2D){.min = {0.5 * WINDOW_WIDTH - (225 / 2), 
+														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160}, 
+												 .max = {0.5 * WINDOW_WIDTH - (225 / 2) + 255, 
+														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160 + 25}};
+				AABB2D quitButtonAABB = (AABB2D){.min = {0.5 * WINDOW_WIDTH - (75 / 2),
+														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230}, 
+												 .max = {0.5 * WINDOW_WIDTH - (75 / 2) + 75,
+														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230 + 25}};
+				if(CollisionPointAndAABB2D(mousePosition, playButtonAABB)){
+					g_GameState = GS_LEVEL;
+					level->firstInitialized = MTHLIB_TRUE;
+				}
+				if(CollisionPointAndAABB2D(mousePosition, quitButtonAABB)){
+					g_GameIsRunning = MTHLIB_FALSE;
+				}
+
+			}
+		}
 		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
 		g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
 	}
@@ -83,7 +109,7 @@ void ProcessInputLevel(void){
 				mouseIsPressed = MTHLIB_TRUE;
 				mousePosWhenMousePressed = GetMousePosition();
 			}
-			if(event.type == SDL_MOUSEBUTTONUP){
+			if(event.type == SDL_MOUSEBUTTONUP && !level->firstInitialized){
 				mouseIsPressed = MTHLIB_FALSE;
 				v2 mousePosWhenMouseReleased = GetMousePosition();
 				v2 subtraction = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
@@ -96,6 +122,7 @@ void ProcessInputLevel(void){
 				g_StrokeCounter++;
 			}
 		}
+		
 		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
 		g_Input.closeKeyWasDown = g_Input.closeKeyIsDown;
 	}

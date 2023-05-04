@@ -12,6 +12,8 @@ SDL_Texture* g_LogoTexture = NULL;
 TTF_Font* g_Font = NULL;
 
 GAME_STATE g_GameState = 0;
+// Button g_StartMenuPlayButton = {0};
+// Button g_StartMenuQuitButton = {0};
 
 Level* level = NULL;
 i32 g_CurrentLevel = 0;
@@ -38,6 +40,8 @@ int main(void){
 	if(!CreateWindow()) goto quit;
 
 	level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
+	level->firstInitialized = MTHLIB_FALSE;
+
 	if(!LoadAssets()) goto quit;
 
 	g_GameState = GS_STARTMENU;

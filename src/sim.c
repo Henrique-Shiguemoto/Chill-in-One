@@ -80,7 +80,7 @@ OutOfBrickCollisionDetection:
 			level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
 		}else{
 			printf("You Finished the Game!\n");
-			g_GameIsRunning = MTHLIB_FALSE;
+			g_GameState = GS_ENDMENU;
 		}
 		return;
 	}

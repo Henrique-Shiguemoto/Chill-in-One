@@ -87,6 +87,8 @@ void RenderDebugInfo(void){
 		RenderString(debugString, (v2){25, 45}, (v2){300, 20});
 		snprintf(debugString, array_count(debugString), "Stroke Power = %f", g_PowerBar.currentPower);
 		RenderString(debugString, (v2){25, 65}, (v2){300, 20});
+		snprintf(debugString, array_count(debugString), "Level FI = %s", level->firstInitialized ? "TRUE" : "FALSE");
+		RenderString(debugString, (v2){25, 85}, (v2){200, 20});
 	}
 }
 
