@@ -79,7 +79,6 @@ OutOfBrickCollisionDetection:
 		if(g_CurrentLevel < LEVEL_COUNT){
 			level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
 		}else{
-			printf("You Finished the Game!\n");
 			g_GameState = GS_ENDMENU;
 		}
 		return;

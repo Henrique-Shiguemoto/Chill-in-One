@@ -1,5 +1,6 @@
 #include <math.h>
 #include "input.h"
+#include "parseLevel.h"
 #include "main.h"
 
 extern b8 g_GameIsRunning;
@@ -10,6 +11,10 @@ extern Level* level;
 extern Arrow g_Arrow;
 extern PowerBar g_PowerBar;
 extern i32 g_StrokeCounter;
+
+extern const char* g_LevelPaths[];
+extern const char* g_LevelSongPaths[];
+extern i32 g_CurrentLevel;
 
 static v2 mousePosWhenMousePressed = {0};
 static b8 mouseIsPressed = MTHLIB_FALSE;
@@ -79,6 +84,12 @@ void ProcessInputEndMenu(void){
 			}
 			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
+			}
+			if(event.key.keysym.sym == SDLK_RETURN){
+				g_GameState = GS_LEVEL;
+				g_CurrentLevel = 0;
+				level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
+				level->firstInitialized = MTHLIB_TRUE;
 			}
 		}
 		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
