@@ -109,7 +109,7 @@ void ProcessInputLevel(void){
 				mouseIsPressed = MTHLIB_TRUE;
 				mousePosWhenMousePressed = GetMousePosition();
 			}
-			if(event.type == SDL_MOUSEBUTTONUP && !level->firstInitialized){
+			if(event.type == SDL_MOUSEBUTTONUP && mouseIsPressed){
 				mouseIsPressed = MTHLIB_FALSE;
 				v2 mousePosWhenMouseReleased = GetMousePosition();
 				v2 subtraction = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
