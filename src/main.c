@@ -12,8 +12,6 @@ SDL_Texture* g_LogoTexture = NULL;
 TTF_Font* g_Font = NULL;
 
 GAME_STATE g_GameState = 0;
-// Button g_StartMenuPlayButton = {0};
-// Button g_StartMenuQuitButton = {0};
 
 Level* level = NULL;
 i32 g_CurrentLevel = 0;
@@ -21,8 +19,8 @@ const char* g_LevelPaths[] = {"src/levels/lvl1.txt",
 							"src/levels/lvl2.txt",
 							"src/levels/lvl3.txt"};
 const char* g_LevelSongPaths[] = {"assets/sounds/music/Song2-lowVolume.wav",
-								"assets/sounds/music/Song4.wav",
-								"assets/sounds/music/Song5.wav"};
+								"assets/sounds/music/Song4-lowVolume.wav",
+								"assets/sounds/music/Song5-lowVolume.wav"};
 
 Arrow g_Arrow = {.offsetFromBall = {0, 0}, .width = 64, .height = 64};
 PowerBar g_PowerBar = {.currentPower = 0.0f};
@@ -34,6 +32,7 @@ b8 g_GameIsRunning = MTHLIB_FALSE;
 b8 g_ShowDebugInfo = MTHLIB_FALSE;
 
 Audio g_CollisionSFX = {0};
+Audio g_HoleSFX = {0};
 
 int main(void){
 	if(!InitializeSystems()) goto quit;
@@ -173,6 +172,18 @@ b8 LoadAssets(void){
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return MTHLIB_FALSE;
 	}
+
+	if(SDL_LoadWAV("assets/sounds/sfx/Pickup_Coin2.wav", &g_HoleSFX.spec, &g_HoleSFX.buffer, &g_HoleSFX.length) == NULL){
+		//Error loading wav
+		fprintf(stderr, "%s\n", SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	g_HoleSFX.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
+	if(g_HoleSFX.deviceID == 0){
+		fprintf(stderr, "%s\n", SDL_GetError());
+		return MTHLIB_FALSE;
+	}
+	
 	g_LogoTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/logo.png");
 	if(g_LogoTexture == NULL){
 		//Error loading texture
