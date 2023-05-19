@@ -21,7 +21,7 @@ On the root directory, open a terminal and run the command: <code>make run</code
 
 # Screenshots
 
-[menu](/readme_imgs/menu.png)
+![menu](/readme_imgs/menu.png)
 
 ![simple_level](/readme_imgs/simple_level.png)
 
