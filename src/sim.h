@@ -1,6 +1,7 @@
 #pragma once
 
-#include "mthlib.h"
+#include "rmathlib.h"
+#include "rtypes.h"
 
 void SimulateWorld(void);
-b8 CollisionSphere2DAndAABB2D(AABB2D aabb, sphere2D s);
+b8 rm_collision_circle_AABB2D(rm_AABB2D aabb, rm_circle s);

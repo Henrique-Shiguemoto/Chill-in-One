@@ -28,8 +28,8 @@ i32 g_StrokeCounter = 0;
 
 Input g_Input = {0};
 
-b8 g_GameIsRunning = MTHLIB_FALSE;
-b8 g_ShowDebugInfo = MTHLIB_FALSE;
+b8 g_GameIsRunning = RMATH_FALSE;
+b8 g_ShowDebugInfo = RMATH_FALSE;
 
 Audio g_CollisionSFX = {0};
 Audio g_HoleSFX = {0};
@@ -39,12 +39,12 @@ int main(void){
 	if(!CreateWindow()) goto quit;
 
 	level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
-	level->firstInitialized = MTHLIB_FALSE;
+	level->firstInitialized = RMATH_FALSE;
 
 	if(!LoadAssets()) goto quit;
 
 	g_GameState = GS_STARTMENU;
-	g_GameIsRunning = MTHLIB_TRUE;
+	g_GameIsRunning = RMATH_TRUE;
 	while(g_GameIsRunning){
 		u32 frameStart = SDL_GetTicks();
 		ProcessInput();
@@ -68,7 +68,7 @@ b8 CreateWindow(void){
 	if(g_Window.window == NULL){
 		//Error creating window
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
 	//Setting the window icon
@@ -80,9 +80,9 @@ b8 CreateWindow(void){
 	if(g_Window.renderer == NULL){
 		//Error creating renderer
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
-	return MTHLIB_TRUE;
+	return RMATH_TRUE;
 }
 
 b8 InitializeSystems(void){
@@ -90,24 +90,24 @@ b8 InitializeSystems(void){
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
 		//Error initializing SDL
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
 	//SDL_image Initialization
 	if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG ){
 		//Error initializing SDL_image
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
 	//SDL_ttf Initialization
 	if(TTF_Init() < 0){
 		//Error initializing SDL_ttf
 		fprintf(stderr, TTF_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
-	return MTHLIB_TRUE;
+	return RMATH_TRUE;
 }
 
 b8 LoadAssets(void){
@@ -116,82 +116,82 @@ b8 LoadAssets(void){
 	if(g_BackgroundTile == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_BrickTile = IMG_LoadTexture(g_Window.renderer, "assets/images/brick.png");
 	if(g_BrickTile == NULL){
 		//Error loading text
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	level->hole.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/hole.png");
 	if(level->hole.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	level->ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
 	if(level->ball.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_Arrow.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/arrow.png");
 	if(g_Arrow.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_PowerBar.backgroundTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/powerMeterBackground.png");
 	if(g_PowerBar.backgroundTexture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_PowerBar.foregroundTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/powerMeterForeground.png");
 	if(g_PowerBar.foregroundTexture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_Font = TTF_OpenFont("assets/fonts/8bitOperatorPlus8-Regular.ttf", 32);
 	if(g_Font == NULL){
 		//Error loading font
 		fprintf(stderr, TTF_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	
 	// For some reason the pitch sounds different if I use CreateAudio here...
 	if(SDL_LoadWAV("assets/sounds/sfx/Hit_Hurt3.wav", &g_CollisionSFX.spec, &g_CollisionSFX.buffer, &g_CollisionSFX.length) == NULL){
 		//Error loading wav
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_CollisionSFX.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
 	if(g_CollisionSFX.deviceID == 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
 	if(SDL_LoadWAV("assets/sounds/sfx/Pickup_Coin2.wav", &g_HoleSFX.spec, &g_HoleSFX.buffer, &g_HoleSFX.length) == NULL){
 		//Error loading wav
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	g_HoleSFX.deviceID = SDL_OpenAudioDevice(NULL, 0, &level->song.spec, NULL, 0);
 	if(g_HoleSFX.deviceID == 0){
 		fprintf(stderr, "%s\n", SDL_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	
 	g_LogoTexture = IMG_LoadTexture(g_Window.renderer, "assets/images/logo.png");
 	if(g_LogoTexture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
-	return MTHLIB_TRUE;
+	return RMATH_TRUE;
 }
 
 void QuitGame(void){

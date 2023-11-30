@@ -42,15 +42,15 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 	}
 	posY = atoi(buffer);
 
-	if(!CheckPosition((v2){posX, posY})){
+	if(!CheckPosition((rm_v2f){posX, posY})){
 		fprintf(stderr, "Error: Input Ball Positions are invalid\n");
 		return NULL;
 	}
 
 	//assign converted strings to ball's position
-	level->ball.pos = (v2){posX, posY};
-	level->ball.vel = (v2){0};
-	level->ball.isMoving = MTHLIB_FALSE;
+	level->ball.pos = (rm_v2f){posX, posY};
+	level->ball.vel = (rm_v2f){0};
+	level->ball.isMoving = RMATH_FALSE;
 
 	//"reading" hole=
 	fseek(levelConfigFile, 5, SEEK_CUR);
@@ -77,13 +77,13 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 	}
 	posY = atoi(buffer);
 
-	if(!CheckPosition((v2){posX, posY})){
+	if(!CheckPosition((rm_v2f){posX, posY})){
 		fprintf(stderr, "Error: Input Hole Positions are invalid\n");
 		return NULL;
 	}
 
 	//assign converted strings to hole's position
-	level->hole.pos = (v2){posX, posY};
+	level->hole.pos = (rm_v2f){posX, posY};
 
 	//"reading" tilemap=
 	fseek(levelConfigFile, 8, SEEK_CUR);
@@ -104,34 +104,34 @@ Level* CreateLevel(const char* levelPath, const char* songLevelPath){
 	if(level->hole.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 	level->ball.texture = IMG_LoadTexture(g_Window.renderer, "assets/images/ball.png");
 	if(level->ball.texture == NULL){
 		//Error loading texture
 		fprintf(stderr, IMG_GetError());
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
 
-	level->firstInitialized = MTHLIB_TRUE;
+	level->firstInitialized = RMATH_TRUE;
 
 	fclose(levelConfigFile);
 	return level;
 }
 
-b8 CheckPosition(v2 position){
+b8 CheckPosition(rm_v2f position){
 	if(position.x < 0 || position.x > WINDOW_WIDTH ||
 		position.y < 0 || position.y > WINDOW_HEIGHT){
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
-	return MTHLIB_TRUE;
+	return RMATH_TRUE;
 }
 
 b8 CheckTileType(u8 tileType){
 	if(tileType != BRICK_TILE && tileType != BACKGROUND_TILE){
-		return MTHLIB_FALSE;
+		return RMATH_FALSE;
 	}
-	return MTHLIB_TRUE;
+	return RMATH_TRUE;
 }
 
 void FreeLevel(Level* level){

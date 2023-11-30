@@ -1,6 +1,7 @@
 #pragma once
 
-#include "mthlib.h"
+#include "rmathlib.h"
+#include "rtypes.h"
 
 typedef struct Input{
 	b8 debugKeyIsDown;
@@ -16,4 +17,4 @@ void ProcessInputEndMenu(void);
 void ProcessInputLevel(void);
 void UpdateArrowAngle(void);
 void UpdatePowerBar(void);
-v2 GetMousePosition(void);
+rm_v2f GetMousePosition(void);

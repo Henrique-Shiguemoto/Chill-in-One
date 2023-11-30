@@ -6,7 +6,9 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
-#include "mthlib.h"
+#include "rmathlib.h"
+
+#include "rtypes.h"
 
 #define GAME_NAME 		"Chill-in-One"
 
@@ -44,19 +46,19 @@ typedef struct Window{
 } Window;
 
 typedef struct Ball{
-	v2 pos;
-	v2 vel;
+	rm_v2f pos;
+	rm_v2f vel;
 	b8 isMoving;
 	SDL_Texture* texture;
 } Ball;
 
 typedef struct Hole{
-	v2 pos;
+	rm_v2f pos;
 	SDL_Texture* texture;
 } Hole;
 
 typedef struct Arrow{
-	v2 offsetFromBall;
+	rm_v2f offsetFromBall;
 	f32 angle;
 	i32 width;
 	i32 height;

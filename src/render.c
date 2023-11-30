@@ -59,7 +59,7 @@ void RenderUI(void){
 	//stroke counter
 	char uiString[64];
 	snprintf(uiString, array_count(uiString), "Stroke Counter = %i", g_StrokeCounter);
-	RenderString(uiString, (v2){0.5*WINDOW_WIDTH - 150, 595}, (v2){300, 30});
+	RenderString(uiString, (rm_v2f){0.5*WINDOW_WIDTH - 150, 595}, (rm_v2f){300, 30});
 	
 	//power meter background
 	SDL_Rect destRectBackground = {.x = WINDOW_WIDTH - 88 - 0.5*(BRICK_SIZE - 48),
@@ -79,20 +79,20 @@ void RenderUI(void){
 }
 
 void RenderDebugInfo(void){
-	if(g_ShowDebugInfo == MTHLIB_TRUE){
+	if(g_ShowDebugInfo == RMATH_TRUE){
 		char debugString[200];
 		snprintf(debugString, array_count(debugString), "Ball's Velocity = (%.4f, %.4f)", level->ball.vel.x, level->ball.vel.y);
-		RenderString(debugString, (v2){25, 25}, (v2){400, 20});
+		RenderString(debugString, (rm_v2f){25, 25}, (rm_v2f){400, 20});
 		snprintf(debugString, array_count(debugString), "Ball is Moving = %s", level->ball.isMoving ? "TRUE" : "FALSE");
-		RenderString(debugString, (v2){25, 45}, (v2){300, 20});
+		RenderString(debugString, (rm_v2f){25, 45}, (rm_v2f){300, 20});
 		snprintf(debugString, array_count(debugString), "Stroke Power = %f", g_PowerBar.currentPower);
-		RenderString(debugString, (v2){25, 65}, (v2){300, 20});
+		RenderString(debugString, (rm_v2f){25, 65}, (rm_v2f){300, 20});
 		snprintf(debugString, array_count(debugString), "Level FI = %s", level->firstInitialized ? "TRUE" : "FALSE");
-		RenderString(debugString, (v2){25, 85}, (v2){200, 20});
+		RenderString(debugString, (rm_v2f){25, 85}, (rm_v2f){200, 20});
 	}
 }
 
-void RenderString(const char* text, v2 pos, v2 size){
+void RenderString(const char* text, rm_v2f pos, rm_v2f size){
 	SDL_Surface* fontSurface = TTF_RenderText_Solid(g_Font, text, (SDL_Color){0, 0, 0, 0});
 	SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(g_Window.renderer, fontSurface);
 	SDL_FreeSurface(fontSurface);
@@ -109,8 +109,8 @@ void RenderStartMenu(void){
 						 .w = LOGO_WIDTH,
 						 .h = LOGO_HEIGHT};
 	SDL_RenderCopy(g_Window.renderer, g_LogoTexture, NULL, &destRect);
-	RenderString("Start Game", (v2){0.5 * WINDOW_WIDTH - (225 / 2), destRect.y + 160}, (v2){225, 25});
-	RenderString("Quit", (v2){0.5 * WINDOW_WIDTH - (75 / 2), destRect.y + 230}, (v2){75, 25});
+	RenderString("Start Game", (rm_v2f){0.5 * WINDOW_WIDTH - (225 / 2), destRect.y + 160}, (rm_v2f){225, 25});
+	RenderString("Quit", (rm_v2f){0.5 * WINDOW_WIDTH - (75 / 2), destRect.y + 230}, (rm_v2f){75, 25});
 	SDL_RenderPresent(g_Window.renderer);
 }
 
@@ -130,9 +130,9 @@ void RenderLevel(void){
 void RenderEndMenu(void){
 	SDL_RenderClear(g_Window.renderer);
 	RenderTilemap();
-	RenderString("You Finished!", (v2){0.5*WINDOW_WIDTH - (400 / 2), 0.5*WINDOW_HEIGHT - (55/2)}, (v2){400, 55});
-	RenderString("Press Enter to Restart", (v2){75, WINDOW_HEIGHT - BRICK_SIZE - 70}, (v2){400, 25});
-	RenderString("Press Esc to Quit", (v2){75, WINDOW_HEIGHT - BRICK_SIZE - 35}, (v2){300, 25});
+	RenderString("You Finished!", (rm_v2f){0.5*WINDOW_WIDTH - (400 / 2), 0.5*WINDOW_HEIGHT - (55/2)}, (rm_v2f){400, 55});
+	RenderString("Press Enter to Restart", (rm_v2f){75, WINDOW_HEIGHT - BRICK_SIZE - 70}, (rm_v2f){400, 25});
+	RenderString("Press Esc to Quit", (rm_v2f){75, WINDOW_HEIGHT - BRICK_SIZE - 35}, (rm_v2f){300, 25});
 	SDL_RenderPresent(g_Window.renderer);
 }
 

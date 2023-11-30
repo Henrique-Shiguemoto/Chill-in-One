@@ -1,4 +1,5 @@
-#include <math.h>
+#include <math.h> //for acosf (haven't implemented acosf in rmathlib.h)
+
 #include "input.h"
 #include "parseLevel.h"
 #include "main.h"
@@ -16,8 +17,8 @@ extern const char* g_LevelPaths[];
 extern const char* g_LevelSongPaths[];
 extern i32 g_CurrentLevel;
 
-static v2 mousePosWhenMousePressed = {0};
-static b8 mouseIsPressed = MTHLIB_FALSE;
+static rm_v2f mousePosWhenMousePressed = {0};
+static b8 mouseIsPressed = RMATH_FALSE;
 
 void ProcessInputStartMenu(void){
 	SDL_Event event;
@@ -27,11 +28,11 @@ void ProcessInputStartMenu(void){
 		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
 
 		if(event.type == SDL_QUIT){
-			g_GameIsRunning = MTHLIB_FALSE;
+			g_GameIsRunning = RMATH_FALSE;
 		}
 		if(event.type == SDL_KEYDOWN){
 			if(g_Input.closeKeyIsDown  && !g_Input.closeKeyWasDown){
-				g_GameIsRunning = MTHLIB_FALSE;
+				g_GameIsRunning = RMATH_FALSE;
 			}
 			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
@@ -40,25 +41,25 @@ void ProcessInputStartMenu(void){
 		if(event.button.button == SDL_BUTTON_LEFT){
 			if(event.type == SDL_MOUSEBUTTONDOWN){
 				//verify that the mouse position is at the top of a button
-				v2 mousePosition = GetMousePosition();
+				rm_v2f mousePosition = GetMousePosition();
 
 				//Hard coding for now (could create some sort of Button struct and so on...)
 				// (v2){0.5 * WINDOW_WIDTH - (225 / 2), 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160}, (v2){225, 25}
 				// (v2){0.5 * WINDOW_WIDTH - (75 / 2), 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230}, (v2){75, 25}
-				AABB2D playButtonAABB = (AABB2D){.min = {0.5 * WINDOW_WIDTH - (225 / 2), 
+				rm_AABB2D playButtonAABB = (rm_AABB2D){.min = {0.5 * WINDOW_WIDTH - (225 / 2), 
 														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160}, 
-												 .max = {0.5 * WINDOW_WIDTH - (225 / 2) + 255, 
+	        										   .max = {0.5 * WINDOW_WIDTH - (225 / 2) + 255, 
 														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 160 + 25}};
-				AABB2D quitButtonAABB = (AABB2D){.min = {0.5 * WINDOW_WIDTH - (75 / 2),
+				rm_AABB2D quitButtonAABB = (rm_AABB2D){.min = {0.5 * WINDOW_WIDTH - (75 / 2),
 														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230}, 
-												 .max = {0.5 * WINDOW_WIDTH - (75 / 2) + 75,
+												 	   .max = {0.5 * WINDOW_WIDTH - (75 / 2) + 75,
 														 0.5 * WINDOW_HEIGHT - 0.5 * LOGO_HEIGHT + 230 + 25}};
-				if(CollisionPointAndAABB2D(mousePosition, playButtonAABB)){
+				if(rm_collision_point_AABB2D(mousePosition, playButtonAABB)){
 					g_GameState = GS_LEVEL;
-					level->firstInitialized = MTHLIB_TRUE;
+					level->firstInitialized = RMATH_TRUE;
 				}
-				if(CollisionPointAndAABB2D(mousePosition, quitButtonAABB)){
-					g_GameIsRunning = MTHLIB_FALSE;
+				if(rm_collision_point_AABB2D(mousePosition, quitButtonAABB)){
+					g_GameIsRunning = RMATH_FALSE;
 				}
 
 			}
@@ -76,11 +77,11 @@ void ProcessInputEndMenu(void){
 		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
 
 		if(event.type == SDL_QUIT){
-			g_GameIsRunning = MTHLIB_FALSE;
+			g_GameIsRunning = RMATH_FALSE;
 		}
 		if(event.type == SDL_KEYDOWN){
 			if(g_Input.closeKeyIsDown  && !g_Input.closeKeyWasDown){
-				g_GameIsRunning = MTHLIB_FALSE;
+				g_GameIsRunning = RMATH_FALSE;
 			}
 			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
@@ -89,7 +90,7 @@ void ProcessInputEndMenu(void){
 				g_GameState = GS_LEVEL;
 				g_CurrentLevel = 0;
 				level = CreateLevel(g_LevelPaths[g_CurrentLevel], g_LevelSongPaths[g_CurrentLevel]);
-				level->firstInitialized = MTHLIB_TRUE;
+				level->firstInitialized = RMATH_TRUE;
 			}
 		}
 		g_Input.debugKeyWasDown = g_Input.debugKeyIsDown;
@@ -105,11 +106,11 @@ void ProcessInputLevel(void){
 		g_Input.closeKeyIsDown = keyStates[SDL_SCANCODE_ESCAPE];
 
 		if(event.type == SDL_QUIT){
-			g_GameIsRunning = MTHLIB_FALSE;
+			g_GameIsRunning = RMATH_FALSE;
 		}
 		if(event.type == SDL_KEYDOWN){
 			if(g_Input.closeKeyIsDown  && !g_Input.closeKeyWasDown){
-				g_GameIsRunning = MTHLIB_FALSE;
+				g_GameIsRunning = RMATH_FALSE;
 			}
 			if(g_Input.debugKeyIsDown && !g_Input.debugKeyWasDown){
 				g_ShowDebugInfo = !g_ShowDebugInfo;
@@ -117,19 +118,19 @@ void ProcessInputLevel(void){
 		}
 		if(event.button.button == SDL_BUTTON_LEFT && !level->ball.isMoving){
 			if(event.type == SDL_MOUSEBUTTONDOWN){
-				mouseIsPressed = MTHLIB_TRUE;
+				mouseIsPressed = RMATH_TRUE;
 				mousePosWhenMousePressed = GetMousePosition();
 			}
 			if(event.type == SDL_MOUSEBUTTONUP && mouseIsPressed){
-				mouseIsPressed = MTHLIB_FALSE;
-				v2 mousePosWhenMouseReleased = GetMousePosition();
-				v2 subtraction = SubtractV2(mousePosWhenMousePressed, mousePosWhenMouseReleased);
-				if(NormV2(subtraction) >= MAX_VEL_NORM){
-					level->ball.vel = ScaleV2(UnitV2(subtraction), MAX_VEL_NORM);
+				mouseIsPressed = RMATH_FALSE;
+				rm_v2f mousePosWhenMouseReleased = GetMousePosition();
+				rm_v2f subtraction = rm_sub_v2f(mousePosWhenMousePressed, mousePosWhenMouseReleased);
+				if(rm_mag_v2f(subtraction) >= MAX_VEL_NORM){
+					level->ball.vel = rm_scale_v2f(rm_unit_v2f(subtraction), MAX_VEL_NORM);
 				}else{
 					level->ball.vel = subtraction;
 				}
-				level->ball.isMoving = MTHLIB_TRUE;
+				level->ball.isMoving = RMATH_TRUE;
 				g_StrokeCounter++;
 			}
 		}
@@ -164,48 +165,48 @@ void ProcessInput(void){
 
 void UpdateArrowAngle(void){
 	//Getting mouse position
-	v2 mousePosition = GetMousePosition();
+	rm_v2f mousePosition = GetMousePosition();
 
 	//Calculating arrow direction
-	v2 ballCenter = (v2){level->ball.pos.x + 0.5*BALL_SIZE, level->ball.pos.y + 0.5*BALL_SIZE};
-	v2 dir = SubtractV2(ballCenter, mousePosition);
+	rm_v2f ballCenter = (rm_v2f){level->ball.pos.x + 0.5*BALL_SIZE, level->ball.pos.y + 0.5*BALL_SIZE};
+	rm_v2f dir = rm_sub_v2f(ballCenter, mousePosition);
 	
 	//Unit X axis vector
-	const v2 horizontalVector = (v2){1.0f, 0.0f};
+	const rm_v2f horizontalVector = (rm_v2f){1.0f, 0.0f};
 	
 	//Angle operations
-	f32 dirNorm = NormV2(dir);
+	f32 dirNorm = rm_mag_v2f(dir);
 	if (dirNorm != 0.0f){
 		f32 angleInRadians = 0.0f;
 		f32 angleInDegrees = 0.0f;
 		if(level->ball.pos.y < mousePosition.y){
 			//Mouse is under the ball
-			angleInRadians = acosf(DotV2(ScaleV2(dir, -1), horizontalVector) / dirNorm);
+			angleInRadians = acosf(rm_dot_v2f(rm_scale_v2f(dir, -1), horizontalVector) / dirNorm);
 			angleInDegrees += 270;
 		}else{
-			angleInRadians = MTHLIB_PI - acosf(DotV2(ScaleV2(dir, -1), horizontalVector) / dirNorm);
+			angleInRadians = RMATH_PI - acosf(rm_dot_v2f(rm_scale_v2f(dir, -1), horizontalVector) / dirNorm);
 			angleInDegrees += 90;
 		}
-		angleInDegrees += angleInRadians * (180/MTHLIB_PI);
+		angleInDegrees += angleInRadians * (180/RMATH_PI);
 		g_Arrow.angle = angleInDegrees;
 	}
 }
 
 void UpdatePowerBar(void){
 	if(mouseIsPressed){
-		v2 currentMousePosition = GetMousePosition();
-		v2 subtraction = SubtractV2(mousePosWhenMousePressed, currentMousePosition);
-		f32 subSize = NormV2(subtraction);
-		f32 clampedSize = Clamp32(0, MAX_VEL_NORM, subSize);
+		rm_v2f currentMousePosition = GetMousePosition();
+		rm_v2f subtraction = rm_sub_v2f(mousePosWhenMousePressed, currentMousePosition);
+		f32 subSize = rm_mag_v2f(subtraction);
+		f32 clampedSize = rm_clamp32(0, MAX_VEL_NORM, subSize);
 		g_PowerBar.currentPower = clampedSize;
 	}else{
 		g_PowerBar.currentPower = 0.0f;
 	}
 }
 
-v2 GetMousePosition(void){
+rm_v2f GetMousePosition(void){
 	int mouseX = 0;
 	int mouseY = 0;
 	SDL_GetMouseState(&mouseX, &mouseY);
-	return (v2){mouseX, mouseY};
+	return (rm_v2f){mouseX, mouseY};
 }
