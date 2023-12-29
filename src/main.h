@@ -28,7 +28,7 @@
 #define LOGO_HEIGHT		124
 #define MAX_VEL_NORM 	300
 
-#define LEVEL_COUNT 	3
+#define LEVEL_COUNT 	6
 
 #define array_count(array) (sizeof(array) / sizeof(array[0]))
 

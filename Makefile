@@ -17,10 +17,10 @@ compile:
 link: 
 	$(CC) $(OBJS) -o $(BIN) $(LFLAGS)
 
-run: all
+run: 
 	$(BIN)
 
-debug: all
+debug: 
 	$(DBG) $(BIN)
 
 clean:

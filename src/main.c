@@ -16,11 +16,17 @@ GAME_STATE g_GameState = 0;
 Level* level = NULL;
 i32 g_CurrentLevel = 0;
 const char* g_LevelPaths[] = {"src/levels/lvl1.txt",
-							"src/levels/lvl2.txt",
-							"src/levels/lvl3.txt"};
+							  "src/levels/lvl2.txt",
+							  "src/levels/lvl3.txt",
+							  "src/levels/lvl4.txt",
+							  "src/levels/lvl5.txt",
+							  "src/levels/lvl6.txt"};
 const char* g_LevelSongPaths[] = {"assets/sounds/music/Song2-lowVolume.wav",
-								"assets/sounds/music/Song4-lowVolume.wav",
-								"assets/sounds/music/Song5-lowVolume.wav"};
+								  "assets/sounds/music/Song4-lowVolume.wav",
+								  "assets/sounds/music/Song5-lowVolume.wav",
+								  "assets/sounds/music/Song2-lowVolume.wav",
+								  "assets/sounds/music/Song4-lowVolume.wav",
+								  "assets/sounds/music/Song5-lowVolume.wav"};
 
 Arrow g_Arrow = {.offsetFromBall = {0, 0}, .width = 64, .height = 64};
 PowerBar g_PowerBar = {.currentPower = 0.0f};
@@ -57,28 +63,22 @@ int main(void){
 	}	
 	
 quit:
-	//Freeing memory and quitting subsystems
 	QuitGame();
 	return 0;
 }
 
 b8 CreateWindow(void){
-	//Creating a window
 	g_Window.window = SDL_CreateWindow(GAME_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
 	if(g_Window.window == NULL){
-		//Error creating window
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return RMATH_FALSE;
 	}
 
-	//Setting the window icon
 	SDL_Surface* iconSurface = IMG_Load("assets/images/ball.png");
 	SDL_SetWindowIcon(g_Window.window, iconSurface);
 
-	//Creating a renderer (with GPU acceleration, we're only using VRAM pixel data, i.e. textures)
 	g_Window.renderer = SDL_CreateRenderer(g_Window.window, -1, SDL_RENDERER_ACCELERATED);
 	if(g_Window.renderer == NULL){
-		//Error creating renderer
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return RMATH_FALSE;
 	}
